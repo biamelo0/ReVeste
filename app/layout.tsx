@@ -29,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <nav className="links" aria-label="Principal">
               <Link href="/como-funciona">Como funciona</Link>
+              <Link href="/doacoes">Doações</Link>
               <Link href="/pecas">Peças</Link>
               <Link href="/ranking">Ranking</Link>
               <Link href="/pontos">Pontos de coleta</Link>
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="logo" style={{ fontSize: 22 }}><Leaf /> ReVeste</span>
             <nav className="links" aria-label="Rodapé" style={{ display: "flex" }}>
               <Link href="/como-funciona">Como funciona</Link>
+              <Link href="/doacoes">Doações</Link>
               <Link href="/pecas">Peças</Link>
               <Link href="/pontos">Pontos de coleta</Link>
               <Link href="/impacto">Impacto</Link>

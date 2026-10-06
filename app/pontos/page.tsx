@@ -1,4 +1,4 @@
-import { MapPin, Buildings, House } from "@phosphor-icons/react/dist/ssr";
+import { MapPin, Buildings, House, MagnifyingGlass, FileText, CheckSquareOffset } from "@phosphor-icons/react/dist/ssr";
 
 export default function Pontos() {
   const points = [
@@ -9,12 +9,13 @@ export default function Pontos() {
 
   return (
     <main className="pad wrap">
-      <div className="title" style={{ marginBottom: 28 }}>
+      <div className="title" style={{ marginBottom: 48 }}>
+        <span className="pill">Rede de Apoio</span>
         <h1>Pontos de <em>Coleta</em></h1>
-        <p>Leve suas roupas ao ponto mais próximo e veja quais itens estão em maior necessidade no momento.</p>
+        <p>Acesse as ONGs, escolas e instituições cadastradas em nossa plataforma e veja o que elas mais precisam.</p>
       </div>
       
-      <div className="map" style={{ marginBottom: 64 }}>
+      <div className="map" style={{ marginBottom: 80 }}>
         <div>
           <div className="points">
             {points.map((p) => (
@@ -32,12 +33,25 @@ export default function Pontos() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 800 }}>
-        <h2>Cadastro de Pontos de Coleta e Comprovações</h2>
-        <br/>
-        <p style={{ marginBottom: 16 }}>O ator "Ponto de Coleta" pode realizar login, cadastrar e publicar seu próprio ponto de recebimento de doações na plataforma. Informações obrigatórias incluem nome, endereço e horário de funcionamento.</p>
-        <p style={{ marginBottom: 16 }}>Os responsáveis também têm um painel para acompanhar as doações direcionadas à sua unidade, podendo filtrar os relatórios por período e status.</p>
-        <p>Quando a doação é recebida fisicamente, o Ponto de Coleta acessa o sistema para validar e confirmar a doação. O sistema, por sua vez, gera o comprovante de doação, notifica o usuário e processa a atribuição dos pontos no Ranking.</p>
+      <div style={{ background: "var(--sand)", borderRadius: 32, padding: 64 }}>
+        <h2 style={{ textAlign: "center", marginBottom: 40 }}>Como atuar como <em>Ponto de Coleta?</em></h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          <div style={{ background: "var(--white)", padding: 32, borderRadius: 24 }}>
+            <MagnifyingGlass size={32} color="var(--forest)" weight="duotone" style={{ marginBottom: 16 }} />
+            <h4>1. Cadastro Visível</h4>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 8 }}>O ponto cria um perfil preenchendo endereço e horários, e logo fica visível nos mapas para os usuários da região.</p>
+          </div>
+          <div style={{ background: "var(--white)", padding: 32, borderRadius: 24 }}>
+            <FileText size={32} color="var(--forest)" weight="duotone" style={{ marginBottom: 16 }} />
+            <h4>2. Acompanhamento</h4>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 8 }}>O responsável acessa um painel de controle onde gerencia as doações direcionadas à sua unidade, com filtros e relatórios.</p>
+          </div>
+          <div style={{ background: "var(--white)", padding: 32, borderRadius: 24 }}>
+            <CheckSquareOffset size={32} color="var(--forest)" weight="duotone" style={{ marginBottom: 16 }} />
+            <h4>3. Comprovação</h4>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 8 }}>Ao receber a doação, o ponto de coleta valida o item, gerando o comprovante e disparando os pontos para o doador.</p>
+          </div>
+        </div>
       </div>
     </main>
   );
