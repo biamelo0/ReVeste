@@ -16,18 +16,20 @@ const Leaf = ({ className }: { className?: string }) => (
   </svg>
 );
 
+import { Handshake, ArrowsClockwise, Tag, Heart, TShirt, Sparkle, CoatHanger, Tote, MapPin, Buildings, House, Star, Trophy, Gift } from "@phosphor-icons/react/dist/ssr";
+
 const modes = [
-  { i: "🤝", t: "Doar", d: "Dê uma nova vida às peças que não usa mais e ajude quem mais precisa." },
-  { i: "🔄", t: "Trocar", d: "Troque peça por peça com outras pessoas, sem gastar nada." },
-  { i: "🏷️", t: "Vender", d: "Venda roupas em bom estado e faça o ciclo da moda continuar girando." },
-  { i: "🧣", t: "Campanhas", d: "Participe da campanha do agasalho e de ações de ONGs e instituições." },
+  { i: <Handshake size={32} weight="light" />, t: "Doar", d: "Dê uma nova vida às peças que não usa mais e ajude quem mais precisa." },
+  { i: <ArrowsClockwise size={32} weight="light" />, t: "Trocar", d: "Troque peça por peça com outras pessoas, sem gastar nada." },
+  { i: <Tag size={32} weight="light" />, t: "Vender", d: "Venda roupas em bom estado e faça o ciclo da moda continuar girando." },
+  { i: <Heart size={32} weight="light" />, t: "Campanhas", d: "Participe da campanha do agasalho e de ações de ONGs e instituições." },
 ];
 
 const pieces = [
-  { e: "🧶", n: "Suéter de tricô bege", m: "Tam. M · Inverno", tag: "Doação", bg: "#EFE3CC" },
-  { e: "👕", n: "Camisa verde-sálvia", m: "Tam. P · Casual", tag: "Troca", bg: "#DCE5CF" },
-  { e: "🧣", n: "Cachecol terracota", m: "Tam. único · Acessório", tag: "Doação", bg: "#F1D6C6" },
-  { e: "👖", n: "Calça jeans reta", m: "Tam. 40 · Casual", tag: "Venda", bg: "#D9E1E6" },
+  { e: <TShirt size={44} weight="light" />, n: "Suéter de tricô bege", m: "Tam. M · Inverno", tag: "Doação", bg: "#EFE3CC" },
+  { e: <CoatHanger size={44} weight="light" />, n: "Camisa verde-sálvia", m: "Tam. P · Casual", tag: "Troca", bg: "#DCE5CF" },
+  { e: <Sparkle size={44} weight="light" />, n: "Cachecol terracota", m: "Tam. único · Acessório", tag: "Doação", bg: "#F1D6C6" },
+  { e: <Tote size={44} weight="light" />, n: "Calça jeans reta", m: "Tam. 40 · Casual", tag: "Venda", bg: "#D9E1E6" },
 ];
 
 const ranking = [
@@ -38,9 +40,9 @@ const ranking = [
 ];
 
 const points = [
-  { i: "📍", n: "Faculdade de Tecnologia", s: "Itapetininga · Seg a sex, 8h às 21h" },
-  { i: "🏛️", n: "Fundo Social de Solidariedade", s: "Centro · Campanha do agasalho" },
-  { i: "🏠", n: "ONG Mãos Dadas", s: "Vila Rio Branco · Seg a sáb" },
+  { i: <MapPin size={26} weight="regular" />, n: "Faculdade de Tecnologia", s: "Itapetininga · Seg a sex, 8h às 21h" },
+  { i: <Buildings size={26} weight="regular" />, n: "Fundo Social de Solidariedade", s: "Centro · Campanha do agasalho" },
+  { i: <House size={26} weight="regular" />, n: "ONG Mãos Dadas", s: "Vila Rio Branco · Seg a sáb" },
 ];
 
 const impact = [
@@ -96,7 +98,7 @@ export default function Home() {
               </div>
               <Leaf className="leaf" />
               <div className="toast">
-                <i>🧥</i>
+                <i><TShirt size={22} weight="light" /></i>
                 <div><b>+248 doações</b><small>nesta semana</small></div>
               </div>
             </div>
@@ -174,9 +176,9 @@ export default function Home() {
               <h2>Quanto mais você ajuda, <em>mais você ganha</em></h2>
               <p>Doar vira um jogo coletivo. Acumule créditos, suba no ranking e troque seus pontos por vantagens.</p>
               <ul className="perks">
-                <li><span>⭐</span> Créditos a cada doação, troca ou venda</li>
-                <li><span>🏆</span> Ranking mensal de quem mais contribui</li>
-                <li><span>🎁</span> Descontos e benefícios com parceiros</li>
+                <li><span><Star size={20} weight="fill" /></span> Créditos a cada doação, troca ou venda</li>
+                <li><span><Trophy size={20} weight="fill" /></span> Ranking mensal de quem mais contribui</li>
+                <li><span><Gift size={20} weight="fill" /></span> Descontos e benefícios com parceiros</li>
               </ul>
               <a href="#entrar" className="btn clay">Começar a pontuar</a>
             </div>
@@ -213,9 +215,9 @@ export default function Home() {
               </div>
             </div>
             <div className="mapbox" role="img" aria-label="Mapa ilustrativo com pontos de coleta">
-              <span className="pin" style={{ left: "24%", top: "28%" }}>📍</span>
-              <span className="pin" style={{ left: "58%", top: "44%" }}>📍</span>
-              <span className="pin" style={{ left: "38%", top: "66%" }}>📍</span>
+              <span className="pin" style={{ left: "24%", top: "28%", color: "var(--clay)" }}><MapPin size={36} weight="fill" /></span>
+              <span className="pin" style={{ left: "58%", top: "44%", color: "var(--clay)" }}><MapPin size={36} weight="fill" /></span>
+              <span className="pin" style={{ left: "38%", top: "66%", color: "var(--clay)" }}><MapPin size={36} weight="fill" /></span>
             </div>
           </div>
         </section>
