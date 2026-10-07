@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Fraunces, DM_Sans, Caveat } from "next/font/google";
+import { Fraunces, DM_Sans, Handlee } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import "./globals.css";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", style: ["normal", "italic"] });
 const body = DM_Sans({ subsets: ["latin"], variable: "--font-body" });
-const cursive = Caveat({ subsets: ["latin"], variable: "--font-cursive" });
+const cursive = Handlee({ subsets: ["latin"], variable: "--font-cursive", weight: "400" });
 
 export const metadata: Metadata = {
   title: "ReVeste | Moda social e sustentável",
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${display.variable} ${body.variable} ${cursive.variable}`}>
         <header className="nav">
           <div className="wrap">
-            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "'Humana', var(--font-cursive), cursive", fontSize: 32, fontWeight: 700 }}>
+            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 32 }}>
               <Image src="/logo-reveste.png" alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
               ReVeste
             </Link>
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <footer>
           <div className="wrap">
-            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "'Humana', var(--font-cursive), cursive", fontSize: 28, fontWeight: 700 }}>
+            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 28 }}>
               <Image src="/logo-reveste.png" alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
               ReVeste
             </Link>
