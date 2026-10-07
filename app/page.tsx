@@ -1,5 +1,6 @@
-import { Handshake, ArrowsClockwise, Tag, Heart, TShirt, Sparkle, CoatHanger, Tote, MapPin, Buildings, House, Star, Trophy, Gift } from "@phosphor-icons/react/dist/ssr";
+import { Handshake, ArrowsClockwise, Tag, Heart, TShirt, Sparkle, CoatHanger, Tote, MapPin, Buildings, House, Star, Trophy, Gift, Plant } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
+import Image from "next/image";
 
 const Wave = ({ color, pos }: { color: string; pos: "top" | "bot" }) => (
   <svg className={`wave ${pos}`} viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true">
@@ -60,7 +61,10 @@ export default function Home() {
       <section className="hero">
         <div className="wrap">
           <div>
-            <span className="pill">🌱 Tecnologia social para a moda</span>
+            <span className="pill">
+              <Plant size={18} weight="duotone" color="var(--forest)" />
+              <span style={{ fontWeight: 500, letterSpacing: "0.02em" }}>Tecnologia social para a moda</span>
+            </span>
             <h1>Vestir um, <em>transforma</em> muitos.</h1>
             <p className="lead">
               A ReVeste conecta quem tem roupas para doar, trocar ou vender com quem mais precisa.
@@ -77,9 +81,20 @@ export default function Home() {
             </div>
           </div>
           <div style={{ position: "relative" }}>
-            <div className="blob" role="img" aria-label="Pilha de roupas dobradas">
-              <div className="fold f1" /><div className="fold f2" /><div className="fold f3" />
-            </div>
+            <Image 
+              src="/pilha-roupas-4.png" 
+              alt="Pilha de roupas dobradas" 
+              width={480} 
+              height={504} 
+              style={{ 
+                objectFit: "contain",
+                width: "100%",
+                height: "auto",
+                aspectRatio: "1 / 1.05",
+                transform: "scale(1.1)"
+              }} 
+              priority
+            />
             <Leaf className="leaf" />
             <div className="toast">
               <i><TShirt size={22} weight="light" /></i>

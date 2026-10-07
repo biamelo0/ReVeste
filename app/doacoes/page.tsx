@@ -1,4 +1,5 @@
 import { Camera, ClipboardText, MapPinLine, Gift, Checks, WarningCircle } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 
 export default function Doacoes() {
   return (
@@ -65,7 +66,7 @@ export default function Doacoes() {
           </div>
           
           <div style={{ marginTop: 32 }}>
-            <a href="/" className="btn">Começar minha primeira doação</a>
+            <Link href="/" className="btn">Começar minha primeira doação</Link>
           </div>
         </div>
       </div>

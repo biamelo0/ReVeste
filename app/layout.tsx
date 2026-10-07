@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Fraunces, DM_Sans } from "next/font/google";
+import { Fraunces, DM_Sans, Caveat } from "next/font/google";
 import Link from "next/link";
+import Image from "next/image";
 import "./globals.css";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", style: ["normal", "italic"] });
 const body = DM_Sans({ subsets: ["latin"], variable: "--font-body" });
+const cursive = Caveat({ subsets: ["latin"], variable: "--font-cursive" });
 
 export const metadata: Metadata = {
   title: "ReVeste | Moda social e sustentável",
@@ -21,11 +23,12 @@ const Leaf = ({ className }: { className?: string }) => (
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className={`${display.variable} ${body.variable}`}>
+      <body className={`${display.variable} ${body.variable} ${cursive.variable}`}>
         <header className="nav">
           <div className="wrap">
-            <Link href="/" className="logo" style={{ color: "var(--forest)" }}>
-              <Leaf /> ReVeste
+            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "'Humana', var(--font-cursive), cursive", fontSize: 32, fontWeight: 700 }}>
+              <Image src="/logo-reveste.png" alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
+              ReVeste
             </Link>
             <nav className="links" aria-label="Principal">
               <Link href="/como-funciona">Como funciona</Link>
@@ -43,7 +46,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <footer>
           <div className="wrap">
-            <span className="logo" style={{ fontSize: 22 }}><Leaf /> ReVeste</span>
+            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "'Humana', var(--font-cursive), cursive", fontSize: 28, fontWeight: 700 }}>
+              <Image src="/logo-reveste.png" alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
+              ReVeste
+            </Link>
             <nav className="links" aria-label="Rodapé" style={{ display: "flex" }}>
               <Link href="/como-funciona">Como funciona</Link>
               <Link href="/doacoes">Doações</Link>
