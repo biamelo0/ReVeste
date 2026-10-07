@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/pontos">Pontos de coleta</Link>
               <Link href="/impacto">Impacto</Link>
             </nav>
-            <Link href="/" className="btn sm">Entrar</Link>
+            <Link href="/login" className="btn sm">Entrar</Link>
           </div>
         </header>
 
