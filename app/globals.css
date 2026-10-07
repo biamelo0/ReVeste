@@ -25,10 +25,10 @@ section{position:relative}
 .btn.sm{padding:9px 20px;font-size:14px}
 
 /* hero */
-.hero{padding:72px 0 120px;background:radial-gradient(900px 500px at 85% 20%,#F0E3C8,transparent 70%)}
+.hero{padding:40px 0 80px;background:radial-gradient(900px 500px at 85% 20%,#F0E3C8,transparent 70%)}
 .hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:var(--white);border:1px solid rgba(42,58,39,.12);font-size:13px;color:var(--sage);margin-bottom:24px;box-shadow:0 4px 12px rgba(42,58,39,0.05)}
-.hero h1{font-size:clamp(44px,6.4vw,82px);margin-bottom:24px}
+.hero h1{font-size:clamp(36px,5vw,64px);margin-bottom:20px}
 .hero p.lead{font-size:18px;color:var(--muted);max-width:480px;margin-bottom:34px}
 .cta{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:44px}
 .stats{display:flex;gap:40px;flex-wrap:wrap}

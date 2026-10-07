@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${display.variable} ${body.variable} ${cursive.variable}`}>
         <header className="nav">
           <div className="wrap">
-            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 32 }}>
+            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 24 }}>
               <Image src="/logo-reveste.png" alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
               ReVeste
             </Link>
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <footer>
           <div className="wrap">
-            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 28 }}>
+            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 22 }}>
               <Image src="/logo-reveste.png" alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
               ReVeste
             </Link>

@@ -84,14 +84,16 @@ export default function Home() {
             <Image 
               src="/pilha-roupas-4.png" 
               alt="Pilha de roupas dobradas" 
-              width={480} 
-              height={504} 
+              width={400} 
+              height={420} 
               style={{ 
                 objectFit: "contain",
                 width: "100%",
+                maxWidth: "400px",
                 height: "auto",
                 aspectRatio: "1 / 1.05",
-                transform: "scale(1.1)"
+                margin: "0 auto",
+                display: "block"
               }} 
               priority
             />
