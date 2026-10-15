@@ -47,7 +47,7 @@ export default function Doacoes() {
 
         <div>
           <h2>Atenção e Boas Práticas</h2>
-          <p style={{ marginBottom: 24, color: "var(--muted)", fontSize: 17 }}>Sua doação deve estar em boas condições de uso para o próximo dono. O que é "lixo" para o armário, não deve ser passado adiante para quem precisa.</p>
+          <p style={{ marginBottom: 24, color: "var(--muted)", fontSize: 17 }}>Sua doação deve estar em boas condições de uso para o próximo dono. O que é &ldquo;lixo&rdquo; para o armário, não deve ser passado adiante para quem precisa.</p>
 
           <div style={{ background: "var(--white)", padding: 24, borderRadius: 24, border: "1px solid rgba(42,58,39,.08)", marginBottom: 16 }}>
             <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 8 }}>
@@ -66,7 +66,7 @@ export default function Doacoes() {
           </div>
           
           <div style={{ marginTop: 32 }}>
-            <Link href="/" className="btn">Começar minha primeira doação</Link>
+            <Link href="/dashboard/doacoes" className="btn">Começar minha primeira doação</Link>
           </div>
         </div>
       </div>

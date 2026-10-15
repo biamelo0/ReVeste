@@ -3,6 +3,7 @@ import { Fraunces, DM_Sans, Handlee } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
 import logoReveste from "@/public/logo-reveste.png";
+import { RevesteProvider } from "./context/RevesteContext";
 import "./globals.css";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", style: ["normal", "italic"] });
@@ -25,42 +26,44 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body className={`${display.variable} ${body.variable} ${cursive.variable}`}>
-        <header className="nav">
-          <div className="wrap">
-            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 24 }}>
-              <Image src={logoReveste} alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
-              ReVeste
-            </Link>
-            <nav className="links" aria-label="Principal">
-              <Link href="/como-funciona">Como funciona</Link>
-              <Link href="/doacoes">Doações</Link>
-              <Link href="/pecas">Peças</Link>
-              <Link href="/ranking">Ranking</Link>
-              <Link href="/pontos">Pontos de coleta</Link>
-              <Link href="/impacto">Impacto</Link>
-            </nav>
-            <Link href="/login" className="btn sm">Entrar</Link>
-          </div>
-        </header>
+        <RevesteProvider>
+          <header className="nav">
+            <div className="wrap">
+              <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 24 }}>
+                <Image src={logoReveste} alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
+                ReVeste
+              </Link>
+              <nav className="links" aria-label="Principal">
+                <Link href="/como-funciona">Como funciona</Link>
+                <Link href="/doacoes">Doações</Link>
+                <Link href="/pecas">Peças</Link>
+                <Link href="/ranking">Ranking</Link>
+                <Link href="/pontos">Pontos de coleta</Link>
+                <Link href="/impacto">Impacto</Link>
+              </nav>
+              <Link href="/login" className="btn sm">Entrar</Link>
+            </div>
+          </header>
 
-        {children}
+          {children}
 
-        <footer>
-          <div className="wrap">
-            <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 22 }}>
-              <Image src={logoReveste} alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
-              ReVeste
-            </Link>
-            <nav className="links" aria-label="Rodapé" style={{ display: "flex" }}>
-              <Link href="/como-funciona">Como funciona</Link>
-              <Link href="/doacoes">Doações</Link>
-              <Link href="/pecas">Peças</Link>
-              <Link href="/pontos">Pontos de coleta</Link>
-              <Link href="/impacto">Impacto</Link>
-            </nav>
-            <span>Projeto de Inovação Social · FATEC Itapetininga · 2026</span>
-          </div>
-        </footer>
+          <footer>
+            <div className="wrap">
+              <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 22 }}>
+                <Image src={logoReveste} alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
+                ReVeste
+              </Link>
+              <nav className="links" aria-label="Rodapé" style={{ display: "flex" }}>
+                <Link href="/como-funciona">Como funciona</Link>
+                <Link href="/doacoes">Doações</Link>
+                <Link href="/pecas">Peças</Link>
+                <Link href="/pontos">Pontos de coleta</Link>
+                <Link href="/impacto">Impacto</Link>
+              </nav>
+              <span>Projeto de Inovação Social · FATEC Itapetininga · 2026</span>
+            </div>
+          </footer>
+        </RevesteProvider>
       </body>
     </html>
   );

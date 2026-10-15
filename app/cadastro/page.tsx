@@ -3,10 +3,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, User, Buildings } from "@phosphor-icons/react";
+import { useReveste } from "../context/RevesteContext";
 
 export default function Cadastro() {
   const router = useRouter();
-  const [tipo, setTipo] = useState<"pf"|"pj">("pf");
+  const { register } = useReveste();
+  const [tipo, setTipo] = useState<"pf" | "pj">("pf");
+  const [nome, setNome] = useState("");
+  const [documento, setDocumento] = useState("");
+  const [email, setEmail] = useState("");
+  const [pontoColeta, setPontoColeta] = useState(false);
 
   return (
     <main className="pad wrap" style={{ maxWidth: 600, minHeight: "80vh", display: "flex", alignItems: "center" }}>
@@ -43,18 +49,45 @@ export default function Cadastro() {
           </button>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); router.push('/dashboard'); }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            register({ nome, documento, email, tipo, pontoColeta });
+            router.push("/dashboard");
+          }}
+        >
           <div className="form-group">
             <label className="label">{tipo === "pf" ? "Nome Completo" : "Razão Social"}</label>
-            <input type="text" className="input" placeholder={tipo === "pf" ? "Seu nome" : "Nome da instituição"} required />
+            <input
+              type="text"
+              className="input"
+              placeholder={tipo === "pf" ? "Seu nome" : "Nome da instituição"}
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label className="label">{tipo === "pf" ? "CPF" : "CNPJ"}</label>
-            <input type="text" className="input" placeholder={tipo === "pf" ? "000.000.000-00" : "00.000.000/0000-00"} required />
+            <input
+              type="text"
+              className="input"
+              placeholder={tipo === "pf" ? "000.000.000-00" : "00.000.000/0000-00"}
+              value={documento}
+              onChange={(e) => setDocumento(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label className="label">E-mail</label>
-            <input type="email" className="input" placeholder="contato@email.com" required />
+            <input
+              type="email"
+              className="input"
+              placeholder="contato@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label className="label">Senha</label>
@@ -62,7 +95,12 @@ export default function Cadastro() {
           </div>
 
           <label style={{ display: "flex", gap: 12, padding: "16px", background: "#f9f9f9", borderRadius: 12, marginBottom: 32, cursor: "pointer", border: "1px solid #eee" }}>
-            <input type="checkbox" style={{ marginTop: 4 }} />
+            <input
+              type="checkbox"
+              checked={pontoColeta}
+              onChange={(e) => setPontoColeta(e.target.checked)}
+              style={{ marginTop: 4 }}
+            />
             <div>
               <b style={{ display: "block", fontSize: 15 }}>Quero ser um ponto de coleta! 📍</b>
               <span style={{ fontSize: 13, color: "var(--muted)" }}>Aceito receber roupas de doadores na minha localidade para repassar a ONGs cadastradas.</span>
