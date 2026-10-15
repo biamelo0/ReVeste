@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, DM_Sans, Handlee } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
+import logoReveste from "@/public/logo-reveste.png";
 import "./globals.css";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", style: ["normal", "italic"] });
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="nav">
           <div className="wrap">
             <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 24 }}>
-              <Image src="/logo-reveste.png" alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
+              <Image src={logoReveste} alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
               ReVeste
             </Link>
             <nav className="links" aria-label="Principal">
@@ -47,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer>
           <div className="wrap">
             <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 22 }}>
-              <Image src="/logo-reveste.png" alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
+              <Image src={logoReveste} alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
               ReVeste
             </Link>
             <nav className="links" aria-label="Rodapé" style={{ display: "flex" }}>

@@ -1,15 +1,18 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "@phosphor-icons/react";
 
 export default function Login() {
+  const router = useRouter();
+
   return (
     <main className="pad wrap" style={{ maxWidth: 500, minHeight: "80vh", display: "flex", alignItems: "center" }}>
       <div className="card" style={{ width: "100%" }}>
         <h1 style={{ marginBottom: 8 }}>Bem-vindo(a) de volta!</h1>
         <p style={{ color: "var(--muted)", marginBottom: 32 }}>Entre para continuar doando, trocando ou vendendo peças na ReVeste.</p>
         
-        <form onSubmit={(e) => { e.preventDefault(); window.location.href = '/dashboard'; }}>
+        <form onSubmit={(e) => { e.preventDefault(); router.push('/dashboard'); }}>
           <div className="form-group">
             <label className="label">E-mail</label>
             <input type="email" className="input" placeholder="seu@email.com" required />

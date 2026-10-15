@@ -1,6 +1,7 @@
 import { Handshake, ArrowsClockwise, Tag, Heart, TShirt, Sparkle, CoatHanger, Tote, MapPin, Buildings, House, Star, Trophy, Gift, Plant } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import Image from "next/image";
+import pilhaRoupas from "@/public/pilha-roupas-4.png";
 
 const Wave = ({ color, pos }: { color: string; pos: "top" | "bot" }) => (
   <svg className={`wave ${pos}`} viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true">
@@ -82,7 +83,7 @@ export default function Home() {
           </div>
           <div style={{ position: "relative" }}>
             <Image 
-              src="/pilha-roupas-4.png" 
+              src={pilhaRoupas} 
               alt="Pilha de roupas dobradas" 
               width={400} 
               height={420} 
@@ -264,7 +265,7 @@ export default function Home() {
           <h2>Vamos vestir o mundo com <em>mais consciência</em>?</h2>
           <p>Crie sua conta gratuita, cadastre a primeira peça e faça parte da comunidade ReVeste.</p>
           <div className="cta">
-            <a href="/login" className="btn">Criar conta grátis</a>
+            <Link href="/login" className="btn">Criar conta grátis</Link>
             <a href="#pontos" className="btn ghost">Sou ONG ou instituição</a>
           </div>
         </div>

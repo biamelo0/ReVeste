@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, User, Buildings } from "@phosphor-icons/react";
 
 export default function Cadastro() {
+  const router = useRouter();
   const [tipo, setTipo] = useState<"pf"|"pj">("pf");
 
   return (
@@ -41,7 +43,7 @@ export default function Cadastro() {
           </button>
         </div>
 
-        <form onSubmit={(e) => { e.preventDefault(); window.location.href = '/dashboard'; }}>
+        <form onSubmit={(e) => { e.preventDefault(); router.push('/dashboard'); }}>
           <div className="form-group">
             <label className="label">{tipo === "pf" ? "Nome Completo" : "Razão Social"}</label>
             <input type="text" className="input" placeholder={tipo === "pf" ? "Seu nome" : "Nome da instituição"} required />
