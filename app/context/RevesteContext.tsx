@@ -35,10 +35,10 @@ export interface DoacaoItem {
 export interface CampanhaItem {
   id: string;
   nome: string;
-  organizador: string;
-  local: string;
+  organizador?: string;
+  local?: string;
   descricao: string;
-  itensPrioritarios: string[];
+  itensPrioritarios?: string[];
   periodo: string;
   arrecadado: number;
   meta: number;
@@ -49,13 +49,13 @@ export interface LojaItem {
   id: string;
   nome: string;
   ong: string;
-  enderecoRetirada: string;
-  descricao: string;
-  categoria: "camisa" | "jaqueta" | "ecobag" | "sueter" | "calca" | "cachecol";
+  enderecoRetirada?: string;
+  descricao?: string;
+  categoria?: "camisa" | "jaqueta" | "ecobag" | "sueter" | "calca" | "cachecol";
   tamanho: string;
   pontos: number;
   corFundo: string;
-  corPeca: string;
+  corPeca?: string;
   resgatado?: boolean;
   voucherCodigo?: string;
 }
@@ -92,14 +92,13 @@ interface RevesteContextType {
   validarDoacao: (id: string, aprovar: boolean, pontos?: number, motivo?: string) => void;
   criarCampanha: (dados: {
     nome: string;
-    organizador: string;
-    local: string;
+    organizador?: string;
+    local?: string;
     descricao: string;
-    itensPrioritarios: string[];
+    itensPrioritarios?: string[];
     periodo: string;
     meta: number;
   }) => void;
-  doarParaCampanha: (campanhaId: string, quantidade: number, descricaoItens: string) => DoacaoItem | null;
   resgatarItemLoja: (id: string) => { ok: boolean; msg: string; item?: LojaItem };
 }
 
