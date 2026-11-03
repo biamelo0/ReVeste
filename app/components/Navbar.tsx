@@ -3,14 +3,14 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { List, X, House, Handshake, TShirt, Trophy, MapPin, Target, SignIn, UserCircle } from "@phosphor-icons/react";
+import { List, X, House, Handshake, TShirt, Trophy, MapPin, Target, SignIn, UserCircle, SignOut } from "@phosphor-icons/react";
 import logoReveste from "@/public/logo-reveste.png";
 import { useReveste } from "../context/RevesteContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user } = useReveste();
+  const { user, isLoggedIn, logout } = useReveste();
 
   // Fecha o menu mobile ao navegar
   useEffect(() => {
@@ -72,10 +72,17 @@ export default function Navbar() {
 
         {/* Action button & Mobile toggle */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Link href="/dashboard" className="btn sm header-cta">
-            <UserCircle size={18} weight="bold" />
-            <span className="header-cta-text">Meu Painel</span>
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/dashboard" className="btn sm header-cta">
+              <UserCircle size={18} weight="bold" />
+              <span>Meu Painel</span>
+            </Link>
+          ) : (
+            <Link href="/login" className="btn sm">
+              <SignIn size={18} weight="bold" />
+              <span>Entrar</span>
+            </Link>
+          )}
 
           {/* Hamburger toggle button (visible on mobile/tablet) */}
           <button
@@ -133,17 +140,51 @@ export default function Navbar() {
         </nav>
 
         <div className="mobile-drawer-footer">
-          <Link
-            href="/dashboard"
-            className="btn"
-            style={{ width: "100%", justifyContent: "center" }}
-            onClick={() => setIsOpen(false)}
-          >
-            <UserCircle size={20} weight="bold" /> Acessar Painel / Entrar
-          </Link>
-          <p style={{ textAlign: "center", fontSize: 12, color: "var(--muted)", marginTop: 12 }}>
-            Olá, <b>{user.nome}</b> ({user.pontos} pts)
-          </p>
+          {isLoggedIn ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <Link
+                href="/dashboard"
+                className="btn"
+                style={{ width: "100%", justifyContent: "center" }}
+                onClick={() => setIsOpen(false)}
+              >
+                <UserCircle size={20} weight="bold" /> Acessar Meu Painel
+              </Link>
+              <button
+                type="button"
+                className="btn ghost sm"
+                style={{ width: "100%", justifyContent: "center", color: "var(--clay)", borderColor: "var(--clay)" }}
+                onClick={() => {
+                  logout();
+                  setIsOpen(false);
+                }}
+              >
+                <SignOut size={18} /> Sair da Conta
+              </button>
+              <p style={{ textAlign: "center", fontSize: 12, color: "var(--muted)", marginTop: 6 }}>
+                Logado como: <b>{user.nome}</b> ({user.pontos} pts)
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <Link
+                href="/login"
+                className="btn"
+                style={{ width: "100%", justifyContent: "center" }}
+                onClick={() => setIsOpen(false)}
+              >
+                <SignIn size={20} weight="bold" /> Entrar na Conta
+              </Link>
+              <Link
+                href="/cadastro"
+                className="btn ghost"
+                style={{ width: "100%", justifyContent: "center" }}
+                onClick={() => setIsOpen(false)}
+              >
+                Criar Conta Gratuita
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </header>

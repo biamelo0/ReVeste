@@ -11,6 +11,7 @@ export interface UserProfile {
   pontoColeta: boolean;
   pontos: number;
   pecasDoadas: number;
+  isLoggedIn?: boolean;
 }
 
 export interface DoacaoItem {
@@ -72,11 +73,14 @@ export interface MovimentacaoItem {
 
 interface RevesteContextType {
   user: UserProfile;
+  isLoggedIn: boolean;
+  hydrated: boolean;
   doacoes: DoacaoItem[];
   campanhas: CampanhaItem[];
   itensLoja: LojaItem[];
   movimentacoes: MovimentacaoItem[];
   login: (email: string, nome?: string) => void;
+  logout: () => void;
   register: (dados: Partial<UserProfile>) => void;
   updateProfile: (dados: Partial<UserProfile>) => void;
   criarDoacao: (dados: {
@@ -115,6 +119,7 @@ const DEFAULT_USER: UserProfile = {
   pontoColeta: false,
   pontos: 450,
   pecasDoadas: 12,
+  isLoggedIn: false,
 };
 
 const DEFAULT_DOACOES: DoacaoItem[] = [
@@ -367,6 +372,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       email,
       nome: nome || prev.nome || email.split("@")[0],
+      isLoggedIn: true,
     }));
   };
 
@@ -374,6 +380,14 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     setUser((prev) => ({
       ...prev,
       ...dados,
+      isLoggedIn: true,
+    }));
+  };
+
+  const logout = () => {
+    setUser((prev) => ({
+      ...prev,
+      isLoggedIn: false,
     }));
   };
 
@@ -582,11 +596,14 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     <RevesteContext.Provider
       value={{
         user,
+        isLoggedIn: !!user.isLoggedIn,
+        hydrated,
         doacoes,
         campanhas,
         itensLoja,
         movimentacoes,
         login,
+        logout,
         register,
         updateProfile,
         criarDoacao,
