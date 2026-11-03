@@ -10,8 +10,8 @@ export default function Doacoes() {
         <p>Aprenda o passo a passo seguro para registrar sua doação e garantir seus pontos na plataforma ReVeste.</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 64, alignItems: "center", marginBottom: 80 }}>
-        <div style={{ background: "var(--forest)", padding: 48, borderRadius: 32, color: "var(--cream)" }}>
+      <div className="grid-responsive-2" style={{ alignItems: "center", marginBottom: 60, gap: 40 }}>
+        <div className="responsive-box-pad" style={{ background: "var(--forest)", color: "var(--cream)" }}>
           <h2 style={{ marginBottom: 24, color: "var(--white)" }}>O ciclo da doação</h2>
           <ul style={{ listStyle: "none", display: "grid", gap: 32 }}>
             <li style={{ display: "flex", gap: 16 }}>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logoReveste from "@/public/logo-reveste.png";
 import { RevesteProvider } from "./context/RevesteContext";
+import Navbar from "./components/Navbar";
 import "./globals.css";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--font-display", style: ["normal", "italic"] });
@@ -15,52 +16,33 @@ export const metadata: Metadata = {
   description: "Doe, troque ou venda roupas, apoie campanhas solidárias e ganhe créditos por cada peça que volta a circular.",
 };
 
-const Leaf = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-    <path d="M10 54C10 28 28 10 54 10c0 26-18 44-44 44Z" />
-    <path d="M10 54 38 26" />
-  </svg>
-);
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
       <body className={`${display.variable} ${body.variable} ${cursive.variable}`}>
         <RevesteProvider>
-          <header className="nav">
-            <div className="wrap">
-              <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 24 }}>
-                <Image src={logoReveste} alt="ReVeste" width={80} height={80} style={{ objectFit: "contain" }} priority />
-                ReVeste
+          <Navbar />
+
+          {children}
+
+          <footer className="site-footer">
+            <div className="wrap footer-wrap">
+              <Link href="/" className="logo footer-logo" style={{ color: "var(--cream)", fontFamily: "var(--font-cursive)" }}>
+                <Image src={logoReveste} alt="ReVeste" width={56} height={56} style={{ objectFit: "contain" }} />
+                <span>ReVeste</span>
               </Link>
-              <nav className="links" aria-label="Principal">
+              <nav className="footer-links" aria-label="Rodapé">
                 <Link href="/como-funciona">Como funciona</Link>
                 <Link href="/doacoes">Doações</Link>
                 <Link href="/pecas">Peças</Link>
                 <Link href="/ranking">Ranking</Link>
                 <Link href="/pontos">Pontos de coleta</Link>
                 <Link href="/impacto">Impacto</Link>
+                <Link href="/dashboard">Painel</Link>
               </nav>
-              <Link href="/login" className="btn sm">Entrar</Link>
-            </div>
-          </header>
-
-          {children}
-
-          <footer>
-            <div className="wrap">
-              <Link href="/" className="logo" style={{ color: "var(--forest)", fontFamily: "var(--font-cursive)", fontSize: 22 }}>
-                <Image src={logoReveste} alt="ReVeste" width={64} height={64} style={{ objectFit: "contain" }} />
-                ReVeste
-              </Link>
-              <nav className="links" aria-label="Rodapé" style={{ display: "flex" }}>
-                <Link href="/como-funciona">Como funciona</Link>
-                <Link href="/doacoes">Doações</Link>
-                <Link href="/pecas">Peças</Link>
-                <Link href="/pontos">Pontos de coleta</Link>
-                <Link href="/impacto">Impacto</Link>
-              </nav>
-              <span>Projeto de Inovação Social · FATEC Itapetininga · 2026</span>
+              <span className="footer-credits">
+                Projeto de Inovação Social · FATEC Itapetininga · 2026
+              </span>
             </div>
           </footer>
         </RevesteProvider>

@@ -14,7 +14,7 @@ export default function Dashboard() {
           <h1 style={{ fontSize: 28, marginBottom: 8 }}>Olá, {user.nome.split(" ")[0]}! 👋</h1>
           <p style={{ color: "var(--muted)" }}>Acompanhe o seu impacto sustentável e suas recompensas na ReVeste.</p>
         </div>
-        <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <Link href="/dashboard/doacoes" className="btn sm">
             <Plus weight="bold" /> Cadastrar Doação
           </Link>

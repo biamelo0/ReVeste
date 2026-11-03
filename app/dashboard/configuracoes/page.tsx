@@ -43,7 +43,7 @@ export default function Configuracoes() {
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+          <div className="grid-responsive-2" style={{ gap: 16 }}>
             <div className="form-group">
               <label className="label">Nome Completo / Razão Social</label>
               <input

@@ -82,7 +82,7 @@ export default function Doacoes() {
           </p>
 
           <form onSubmit={handleSubmit}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div className="grid-responsive-2" style={{ gap: 14 }}>
               <div className="form-group">
                 <label className="label">Título da Peça ou Lote *</label>
                 <input
@@ -233,7 +233,7 @@ export default function Doacoes() {
       )}
 
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(0,0,0,0.05)", display: "grid", gridTemplateColumns: "1.6fr 1.2fr 1fr", fontWeight: 600, fontSize: 14, color: "var(--muted)" }}>
+        <div className="dash-table-header">
           <span>Item / Lote</span>
           <span>Status e Ponto</span>
           <span>Pontos / Ação</span>
@@ -242,14 +242,7 @@ export default function Doacoes() {
         {doacoes.map((d) => (
           <div
             key={d.id}
-            style={{
-              padding: "20px 24px",
-              borderBottom: "1px solid rgba(0,0,0,0.05)",
-              display: "grid",
-              gridTemplateColumns: "1.6fr 1.2fr 1fr",
-              alignItems: "center",
-              gap: 12,
-            }}
+            className="dash-table-row"
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {d.fotoUrl ? (

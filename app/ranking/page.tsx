@@ -16,28 +16,28 @@ export default function Ranking() {
         <p>Um sistema transparente e gamificado que converte solidariedade em recompensas.</p>
       </div>
 
-      <div style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "center", marginBottom: 80, flexWrap: "wrap" }}>
-        <div className="mode" style={{ textAlign: "center", minWidth: 200 }}>
+      <div style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "center", marginBottom: 60, flexWrap: "wrap" }}>
+        <div className="mode" style={{ textAlign: "center", flex: "1 1 200px", maxWidth: 280 }}>
           <TShirt size={32} color="var(--sage)" weight="duotone" style={{ margin: "0 auto 12px" }} />
           <b style={{ display: "block" }}>1. Você Doa</b>
           <small>Cadastra e envia a roupa</small>
         </div>
-        <ArrowRight size={24} color="var(--muted)" />
-        <div className="mode" style={{ textAlign: "center", minWidth: 200 }}>
+        <ArrowRight size={24} color="var(--muted)" className="desktop-links" />
+        <div className="mode" style={{ textAlign: "center", flex: "1 1 200px", maxWidth: 280 }}>
           <Medal size={32} color="var(--clay)" weight="duotone" style={{ margin: "0 auto 12px" }} />
           <b style={{ display: "block" }}>2. Validação</b>
           <small>Ponto de coleta confirma</small>
         </div>
-        <ArrowRight size={24} color="var(--muted)" />
-        <div className="mode" style={{ textAlign: "center", minWidth: 200 }}>
+        <ArrowRight size={24} color="var(--muted)" className="desktop-links" />
+        <div className="mode" style={{ textAlign: "center", flex: "1 1 200px", maxWidth: 280 }}>
           <ChartLineUp size={32} color="var(--forest)" weight="duotone" style={{ margin: "0 auto 12px" }} />
           <b style={{ display: "block" }}>3. Você Ganha</b>
           <small>Créditos e posições no ranking</small>
         </div>
       </div>
 
-      <div className="game" style={{ borderRadius: 32, padding: "80px 40px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+      <div className="game responsive-box-pad" style={{ borderRadius: 32 }}>
+        <div className="grid-responsive-2" style={{ alignItems: "center", gap: 48 }}>
           <div>
             <h2>Recompensas <em>Exclusivas</em></h2>
             <p>O ReVeste utiliza estratégias de gamificação para incentivar o engajamento contínuo, armazenando o histórico de pontos por usuário com total segurança e criptografia.</p>

@@ -55,7 +55,7 @@ export default function ValidarPecas() {
             Doador: <b>{avaliando.doador}</b> • {avaliando.quantidade} peças ({avaliando.tamanho}) • {avaliando.descricao}
           </p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+          <div className="grid-responsive-2" style={{ gap: 14, marginBottom: 20 }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="label">Pontos a Creditar (30 pts por peça aprovada)</label>
               <input
@@ -98,7 +98,7 @@ export default function ValidarPecas() {
       )}
 
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(0,0,0,0.05)", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", fontWeight: 600, fontSize: 14, color: "var(--muted)" }}>
+        <div className="dash-table-header" style={{ gridTemplateColumns: "2fr 1fr 1fr" }}>
           <span>Lote Aguardando Triagem</span>
           <span>Doador</span>
           <span>Ação</span>
@@ -112,13 +112,7 @@ export default function ValidarPecas() {
           filaTriagem.map((item) => (
             <div
               key={item.id}
-              style={{
-                padding: "20px 24px",
-                borderBottom: "1px solid rgba(0,0,0,0.05)",
-                display: "grid",
-                gridTemplateColumns: "2fr 1fr 1fr",
-                alignItems: "center",
-              }}
+              className="dash-table-row-validar"
             >
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

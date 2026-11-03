@@ -83,7 +83,7 @@ export default function Pecas() {
 
       {detalhe && (
         <div className="card" style={{ marginBottom: 40, border: "2px solid var(--forest)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
             <div>
               <span className="pill" style={{ marginBottom: 8 }}>{detalhe.tag}</span>
               <h2 style={{ fontSize: 24, marginBottom: 6 }}>{detalhe.n}</h2>
@@ -140,9 +140,9 @@ export default function Pecas() {
         ))}
       </div>
 
-      <div style={{ background: "var(--white)", borderRadius: 32, padding: 64, border: "1px solid rgba(42,58,39,.08)" }}>
+      <div className="responsive-box-pad" style={{ background: "var(--white)", border: "1px solid rgba(42,58,39,.08)" }}>
         <h2 style={{ marginBottom: 32, textAlign: "center" }}>Regras de Publicação</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 32 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 24 }}>
           <div>
             <ImageSquare size={32} color="var(--sage)" weight="fill" style={{ marginBottom: 12 }} />
             <h4>Upload de Imagens</h4>

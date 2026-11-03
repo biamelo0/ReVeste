@@ -188,7 +188,7 @@ export default function Home() {
               <li><span><Trophy size={20} weight="fill" /></span> Ranking mensal de quem mais contribui</li>
               <li><span><Gift size={20} weight="fill" /></span> Descontos e benefícios com parceiros</li>
             </ul>
-            <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <a href="#entrar" className="btn clay">Começar a pontuar</a>
               <Link href="/ranking" className="btn ghost" style={{ color: "var(--cream)", borderColor: "var(--cream)" }}>Regras da Gamificação</Link>
             </div>

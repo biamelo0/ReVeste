@@ -95,7 +95,7 @@ export default function ReceberDoacao() {
 
       <form
         className="card"
-        style={{ display: "flex", gap: 16, padding: 24, flexWrap: "wrap" }}
+        style={{ display: "flex", gap: 14, padding: 20, flexWrap: "wrap" }}
         onSubmit={(e) => {
           e.preventDefault();
           handleReceber(codigo);
@@ -107,9 +107,9 @@ export default function ReceberDoacao() {
           placeholder="Código da doação (Ex: REV-9823)"
           value={codigo}
           onChange={(e) => setCodigo(e.target.value)}
-          style={{ flex: 1, minWidth: 220 }}
+          style={{ flex: "1 1 200px", minWidth: 0 }}
         />
-        <button type="submit" className="btn ghost">
+        <button type="submit" className="btn ghost" style={{ flexShrink: 0 }}>
           <MagnifyingGlass /> Confirmar Recebimento
         </button>
       </form>

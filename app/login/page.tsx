@@ -40,7 +40,7 @@ export default function Login() {
             <input type="password" className="input" placeholder="••••••••" required />
           </div>
           
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 8 }}>
             <label style={{ fontSize: 14, color: "var(--muted)", display: "flex", alignItems: "center", gap: 8 }}>
               <input type="checkbox" defaultChecked /> Lembrar de mim
             </label>

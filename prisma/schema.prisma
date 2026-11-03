@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // conexão com pooling na Vercel
+  directUrl = env("POSTGRES_URL_NON_POOLING") // conexão direta para migrations na Vercel
+}
+
+model User {
+  id            String         @id @default(cuid())
+  nome          String
+  email         String         @unique
+  documento     String?
+  endereco      String?
+  tipo          String         @default("pf") // "pf" ou "pj"
+  pontoColeta   Boolean        @default(false)
+  pontos        Int            @default(420)
+  pecasDoadas   Int            @default(14)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  doacoes       Doacao[]
+  movimentacoes Movimentacao[]
+  itensResgatados LojaItem[]
+}
+
+model Doacao {
+  id               String    @id @default(cuid())
+  codigo           String    @unique
+  titulo           String
+  descricao        String
+  quantidade       Int       @default(1)
+  tamanho          String
+  modalidade       String    @default("Doação") // "Doação" | "Troca" | "Venda"
+  preco            Float?
+  pontoDestino     String
+  whatsapp         String?
+  doadorNome       String
+  fotoUrl          String?
+  status           String    @default("Aguardando entrega") // "Aguardando entrega" | "Recebido no ponto" | "Validado pela ONG" | "Reprovado"
+  pontosGerados    Int       @default(30)
+  motivoReprovacao String?
+  campanhaId       String?
+  campanha         Campanha? @relation(fields: [campanhaId], references: [id])
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Campanha {
+  id                String   @id @default(cuid())
+  nome              String
+  organizador       String
+  local             String
+  descricao         String
+  itensPrioritarios String[]
+  periodo           String
+  arrecadado        Int      @default(0)
+  meta              Int      @default(500)
+  familiasAtendidas Int      @default(0)
+  status            String   @default("Ativa") // "Ativa" | "Encerrada"
+  doacoes           Doacao[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model LojaItem {
+  id               String   @id @default(cuid())
+  nome             String
+  ong              String
+  enderecoRetirada String
+  descricao        String
+  categoria        String   // "camisa" | "jaqueta" | "ecobag" | "sueter" | "calca" | "cachecol"
+  tamanho          String
+  pontos           Int
+  corFundo         String
+  corPeca          String
+  resgatado        Boolean  @default(false)
+  voucherCodigo    String?
+  resgatadoPorId   String?
+  resgatadoPor     User?    @relation(fields: [resgatadoPorId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Movimentacao {
+  id          String   @id @default(cuid())
+  titulo      String
+  subtitulo   String
+  pontosTexto String
+  tipo        String   // "credito" | "debito"
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+}

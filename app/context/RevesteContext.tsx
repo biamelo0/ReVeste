@@ -30,18 +30,20 @@ export interface DoacaoItem {
   pontosGerados: number;
   fotoUrl?: string;
   motivoReprovacao?: string;
+  campanhaId?: string;
 }
 
 export interface CampanhaItem {
   id: string;
   nome: string;
-  organizador?: string;
-  local?: string;
+  organizador: string;
+  local: string;
   descricao: string;
-  itensPrioritarios?: string[];
+  itensPrioritarios: string[];
   periodo: string;
   arrecadado: number;
   meta: number;
+  familiasAtendidas: number;
   status: "Ativa" | "Encerrada";
 }
 
@@ -49,13 +51,13 @@ export interface LojaItem {
   id: string;
   nome: string;
   ong: string;
-  enderecoRetirada?: string;
-  descricao?: string;
-  categoria?: "camisa" | "jaqueta" | "ecobag" | "sueter" | "calca" | "cachecol";
+  enderecoRetirada: string;
+  descricao: string;
+  categoria: "camisa" | "jaqueta" | "ecobag" | "sueter" | "calca" | "cachecol";
   tamanho: string;
   pontos: number;
   corFundo: string;
-  corPeca?: string;
+  corPeca: string;
   resgatado?: boolean;
   voucherCodigo?: string;
 }
@@ -87,18 +89,20 @@ interface RevesteContextType {
     pontoDestino: string;
     whatsapp?: string;
     fotoUrl?: string;
+    campanhaId?: string;
   }) => DoacaoItem;
   receberDoacao: (codigo: string) => { ok: boolean; msg: string; item?: DoacaoItem };
   validarDoacao: (id: string, aprovar: boolean, pontos?: number, motivo?: string) => void;
   criarCampanha: (dados: {
     nome: string;
-    organizador?: string;
-    local?: string;
+    organizador: string;
+    local: string;
     descricao: string;
-    itensPrioritarios?: string[];
+    itensPrioritarios: string[];
     periodo: string;
     meta: number;
   }) => void;
+  doarParaCampanha: (campanhaId: string, quantidade: number, descricaoItens: string, tamanho: string) => DoacaoItem | null;
   resgatarItemLoja: (id: string) => { ok: boolean; msg: string; item?: LojaItem };
 }
 
@@ -125,15 +129,15 @@ const DEFAULT_DOACOES: DoacaoItem[] = [
     pontoDestino: "ONG Mãos Dadas",
     doador: "Beatriz Melo",
     whatsapp: "15999990000",
-    dataCriacao: "Há 3 dias",
+    dataCriacao: "12 Out 2026",
     status: "Validado pela ONG",
     pontosGerados: 150,
   },
   {
     id: "2",
     codigo: "REV-9823",
-    titulo: "Camisetas Básicas",
-    descricao: "5 Peças de algodão lavadas",
+    titulo: "Camisetas Básicas Algodão",
+    descricao: "5 peças de algodão lavadas e higienizadas",
     quantidade: 5,
     tamanho: "M",
     modalidade: "Doação",
@@ -148,7 +152,7 @@ const DEFAULT_DOACOES: DoacaoItem[] = [
     id: "3",
     codigo: "REV-9021",
     titulo: "Blusas de Frio Tricô",
-    descricao: "5 blusas de frio higienizadas",
+    descricao: "5 blusas de frio higienizadas sem avarias",
     quantidade: 5,
     tamanho: "G",
     modalidade: "Doação",
@@ -162,7 +166,7 @@ const DEFAULT_DOACOES: DoacaoItem[] = [
   {
     id: "4",
     codigo: "REV-9022",
-    titulo: "Calçados Diversos",
+    titulo: "Calçados Casuais",
     descricao: "3 pares de tênis casuais em bom estado",
     quantidade: 3,
     tamanho: "38 / 40",
@@ -180,59 +184,146 @@ const DEFAULT_CAMPANHAS: CampanhaItem[] = [
   {
     id: "c1",
     nome: "Agasalho Solidário 2026",
-    descricao: "Foco em roupas de inverno, cobertores e meias.",
-    periodo: "01 Jun - 30 Jul",
-    arrecadado: 1200,
+    organizador: "Fundo Social de Solidariedade",
+    local: "Praça dos Três Poderes, Centro · Itapetininga/SP",
+    descricao: "Arrecadação emergencial de agasalhos, cobertores e meias para famílias em vulnerabilidade durante o período de frentes frias.",
+    itensPrioritarios: ["Casacos de frio", "Cobertores", "Meias adultas e infantis", "Moletom"],
+    periodo: "01 Jun – 30 Out 2026",
+    arrecadado: 1420,
     meta: 2000,
+    familiasAtendidas: 310,
     status: "Ativa",
   },
   {
     id: "c2",
     nome: "Volta às Aulas Circular",
-    descricao: "Arrecadação de uniformes, mochilas e calçados infantis.",
-    periodo: "15 Jan - 01 Mar",
+    organizador: "ONG Mãos Dadas & FATEC",
+    local: "Vila Rio Branco · Itapetininga/SP",
+    descricao: "Reaproveitamento de uniformes escolares, mochilas, agasalhos juvenis e calçados infantis para crianças da rede pública.",
+    itensPrioritarios: ["Camisetas de uniforme", "Mochilas", "Tênis infantil (28 ao 36)", "Agasalhos escolares"],
+    periodo: "15 Ago – 30 Nov 2026",
     arrecadado: 480,
+    meta: 600,
+    familiasAtendidas: 145,
+    status: "Ativa",
+  },
+  {
+    id: "c3",
+    nome: "Moda Consciente no Campus",
+    organizador: "FATEC Itapetininga",
+    local: "Hall Principal · FATEC Itapetininga",
+    descricao: "Mutirão universitário de troca e doação de peças casuais, jeans e livros para incentivar a economia circular entre estudantes.",
+    itensPrioritarios: ["Calças Jeans", "Camisas e Camisetas", "Jaquetas", "Acessórios"],
+    periodo: "01 Out – 15 Dez 2026",
+    arrecadado: 315,
     meta: 500,
+    familiasAtendidas: 90,
     status: "Ativa",
   },
 ];
 
 const DEFAULT_LOJA: LojaItem[] = [
-  { id: "l1", nome: "Camisa Social Upcycling", ong: "ONG Costura Viva", tamanho: "Tam. M", pontos: 120, corFundo: "#DCE5CF" },
-  { id: "l2", nome: "Jaqueta Jeans Customizada", ong: "Instituto Mãos Dadas", tamanho: "Tam. G", pontos: 180, corFundo: "#D9E1E6" },
-  { id: "l3", nome: "Ecobag Algodão Reciclado", ong: "Projeto ReVeste FATEC", tamanho: "Tam. Único", pontos: 80, corFundo: "#EFE3CC" },
-  { id: "l4", nome: "Suéter Tricô Sustentável", ong: "Fundo Social", tamanho: "Tam. P", pontos: 150, corFundo: "#F1D6C6" },
-  { id: "l5", nome: "Calça Sarja Verde-Oliva", ong: "ONG Costura Viva", tamanho: "Tam. 40", pontos: 140, corFundo: "#DCE5CF" },
-  { id: "l6", nome: "Cachecol Artesanal Lã", ong: "Instituto Mãos Dadas", tamanho: "Tam. Único", pontos: 90, corFundo: "#EFE3CC" },
+  {
+    id: "l1",
+    nome: "Camisa Social Upcycling",
+    ong: "ONG Costura Viva",
+    enderecoRetirada: "Rua Campos Salles, 410 - Centro, Itapetininga",
+    descricao: "Camisa 100% algodão reconstruída artesanalmente por costureiras parceiras a partir de tecidos doados.",
+    categoria: "camisa",
+    tamanho: "Tam. M",
+    pontos: 120,
+    corFundo: "#DCE5CF",
+    corPeca: "#4A6B53",
+  },
+  {
+    id: "l2",
+    nome: "Jaqueta Jeans Customizada",
+    ong: "Instituto Mãos Dadas",
+    enderecoRetirada: "Av. Peixoto Gomide, 890 - Vila Rio Branco",
+    descricao: "Jaqueta jeans clássica higienizada e bordada à mão com temática botânica sustentável.",
+    categoria: "jaqueta",
+    tamanho: "Tam. G",
+    pontos: 180,
+    corFundo: "#D9E1E6",
+    corPeca: "#3B5978",
+  },
+  {
+    id: "l3",
+    nome: "Ecobag Algodão Reciclado",
+    ong: "Projeto ReVeste FATEC",
+    enderecoRetirada: "FATEC Itapetininga - Bloco A",
+    descricao: "Bolsa ecológica resistente feita com retalhos de lona e sarja reaproveitados das oficinas têxteis.",
+    categoria: "ecobag",
+    tamanho: "Tam. Único",
+    pontos: 80,
+    corFundo: "#EFE3CC",
+    corPeca: "#B8613F",
+  },
+  {
+    id: "l4",
+    nome: "Suéter Tricô Sustentável",
+    ong: "Fundo Social de Solidariedade",
+    enderecoRetirada: "Centro Cultural - Praça Matriz, Itapetininga",
+    descricao: "Suéter em tricô macio revisado na triagem, perfeito para meia-estação e dias frios.",
+    categoria: "sueter",
+    tamanho: "Tam. P",
+    pontos: 150,
+    corFundo: "#F1D6C6",
+    corPeca: "#9C5136",
+  },
+  {
+    id: "l5",
+    nome: "Calça Sarja Verde-Oliva",
+    ong: "ONG Costura Viva",
+    enderecoRetirada: "Rua Campos Salles, 410 - Centro, Itapetininga",
+    descricao: "Calça reta em sarja de alta durabilidade, tingida com pigmentos naturais.",
+    categoria: "calca",
+    tamanho: "Tam. 40",
+    pontos: 140,
+    corFundo: "#DCE5CF",
+    corPeca: "#556B2F",
+  },
+  {
+    id: "l6",
+    nome: "Cachecol Artesanal de Lã",
+    ong: "Instituto Mãos Dadas",
+    enderecoRetirada: "Av. Peixoto Gomide, 890 - Vila Rio Branco",
+    descricao: "Cachecol tecido manualmente com fios reaproveitados por voluntárias da comunidade.",
+    categoria: "cachecol",
+    tamanho: "Tam. Único",
+    pontos: 90,
+    corFundo: "#EFE3CC",
+    corPeca: "#8B5A2B",
+  },
 ];
 
 const DEFAULT_MOVIMENTACOES: MovimentacaoItem[] = [
   {
     id: "m1",
-    titulo: "Doação Validada",
-    subtitulo: "Ponto de coleta: ONG Abrace Solidário",
-    pontosTexto: "+ 50 pts",
+    titulo: "Doação Validada (REV-8841)",
+    subtitulo: "Lote de Inverno • Ponto: ONG Mãos Dadas",
+    pontosTexto: "+ 150 pts",
     tipo: "credito",
   },
   {
     id: "m2",
-    titulo: "Compra na Loja Solidária",
+    titulo: "Resgate na Loja Solidária",
     subtitulo: "Casaco de Inverno (Tamanho M)",
     pontosTexto: "- 120 pts",
     tipo: "debito",
   },
   {
     id: "m3",
-    titulo: "Doação Validada",
-    subtitulo: "Ponto de coleta: Caixa ReVeste Centro",
-    pontosTexto: "+ 30 pts",
+    titulo: "Doação Validada (REV-8104)",
+    subtitulo: "Ponto de coleta: Faculdade de Tecnologia (FATEC)",
+    pontosTexto: "+ 90 pts",
     tipo: "credito",
   },
 ];
 
 const RevesteContext = createContext<RevesteContextType | null>(null);
 
-const STORAGE_KEY = "reveste_app_state_v1";
+const STORAGE_KEY = "reveste_app_state_v2";
 
 export function RevesteProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile>(DEFAULT_USER);
@@ -313,6 +404,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       status: "Aguardando entrega",
       pontosGerados,
       fotoUrl: dados.fotoUrl,
+      campanhaId: dados.campanhaId,
     };
     setDoacoes((prev) => [nova, ...prev]);
     return nova;
@@ -325,7 +417,6 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     }
     const found = doacoes.find((d) => d.codigo.toUpperCase() === clean);
     if (!found) {
-      // Se não existir na lista, cria um lote avulso recebido no ponto para facilitar testes!
       const novoRecebido: DoacaoItem = {
         id: String(Date.now()),
         codigo: clean.startsWith("REV-") ? clean : `REV-${clean}`,
@@ -403,25 +494,62 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     const nova: CampanhaItem = {
       id: String(Date.now()),
       nome: dados.nome,
+      organizador: dados.organizador || "Instituição Parceira",
+      local: dados.local || "Itapetininga/SP",
       descricao: dados.descricao,
+      itensPrioritarios: dados.itensPrioritarios.length ? dados.itensPrioritarios : ["Roupas em bom estado", "Agasalhos"],
       periodo: dados.periodo,
       meta: dados.meta,
       arrecadado: 0,
+      familiasAtendidas: 0,
       status: "Ativa",
     };
     setCampanhas((prev) => [nova, ...prev]);
   };
 
+  const doarParaCampanha: RevesteContextType["doarParaCampanha"] = (campanhaId, quantidade, descricaoItens, tamanho) => {
+    const camp = campanhas.find((c) => c.id === campanhaId);
+    if (!camp) return null;
+
+    const qtd = Math.max(1, Number(quantidade) || 1);
+    const novaDoacao = criarDoacao({
+      titulo: `Campanha: ${camp.nome}`,
+      descricao: descricaoItens || `Doação direcionada para ${camp.nome}`,
+      quantidade: qtd,
+      tamanho: tamanho || "M",
+      modalidade: "Doação",
+      pontoDestino: camp.organizador,
+      campanhaId: camp.id,
+    });
+
+    setCampanhas((prev) =>
+      prev.map((c) =>
+        c.id === campanhaId
+          ? {
+              ...c,
+              arrecadado: c.arrecadado + qtd,
+              familiasAtendidas: c.familiasAtendidas + Math.max(1, Math.floor(qtd / 3)),
+            }
+          : c
+      )
+    );
+
+    return novaDoacao;
+  };
+
   const resgatarItemLoja: RevesteContextType["resgatarItemLoja"] = (id) => {
     const item = itensLoja.find((i) => i.id === id);
     if (!item) return { ok: false, msg: "Item não encontrado." };
-    if (item.resgatado) return { ok: false, msg: "Você já resgatou esta peça!" };
+    if (item.resgatado) return { ok: false, msg: "Você já resgatou esta peça!", item };
     if (user.pontos < item.pontos) {
       return {
         ok: false,
-        msg: `Saldo insuficiente! Você tem ${user.pontos} pts e esta peça requer ${item.pontos} pts.`,
+        msg: `Saldo insuficiente! Você possui ${user.pontos} pts e esta peça requer ${item.pontos} pts.`,
       };
     }
+
+    const voucherCodigo = `VCH-${Math.floor(1000 + Math.random() * 9000)}`;
+    const itemAtualizado: LojaItem = { ...item, resgatado: true, voucherCodigo };
 
     setUser((prev) => ({
       ...prev,
@@ -429,13 +557,13 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     }));
 
     setItensLoja((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, resgatado: true } : i))
+      prev.map((i) => (i.id === id ? itemAtualizado : i))
     );
 
     setMovimentacoes((prev) => [
       {
         id: String(Date.now()),
-        titulo: "Resgate na Loja Solidária",
+        titulo: `Resgate Loja Solidária (${voucherCodigo})`,
         subtitulo: `${item.nome} (${item.tamanho}) • ${item.ong}`,
         pontosTexto: `- ${item.pontos} pts`,
         tipo: "debito",
@@ -445,7 +573,8 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
 
     return {
       ok: true,
-      msg: `Parabéns! Você resgatou "${item.nome}" por ${item.pontos} pts. Retire na ${item.ong}.`,
+      msg: `Resgate confirmado! Cupom ${voucherCodigo} gerado para retirada em ${item.ong}.`,
+      item: itemAtualizado,
     };
   };
 
@@ -464,6 +593,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
         receberDoacao,
         validarDoacao,
         criarCampanha,
+        doarParaCampanha,
         resgatarItemLoja,
       }}
     >

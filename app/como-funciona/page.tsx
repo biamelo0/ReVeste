@@ -9,7 +9,7 @@ export default function ComoFunciona() {
         <p>Mais do que uma campanha, um convite a repensar nosso jeito de consumir e cuidar uns dos outros.</p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", marginBottom: 80 }}>
+      <div className="grid-responsive-2" style={{ alignItems: "center", marginBottom: 60, gap: 40 }}>
         <div>
           <h2>O Problema que <em>Resolvemos</em></h2>
           <p style={{ marginBottom: 16 }}>A indústria da moda é uma das mais poluentes do mundo. Todos os anos, toneladas de roupas em bom estado vão parar em aterros sanitários. Ao mesmo tempo, enfrentamos um aumento nas temperaturas extremas e desigualdade social, onde muitos precisam de agasalhos.</p>
@@ -19,7 +19,7 @@ export default function ComoFunciona() {
             <li style={{ display: "flex", gap: 12, alignItems: "center" }}><CheckCircle size={24} color="var(--clay)" weight="fill" /> Pouco engajamento e recompensas</li>
           </ul>
         </div>
-        <div style={{ background: "var(--sand)", padding: 40, borderRadius: 32 }}>
+        <div className="responsive-box-pad" style={{ background: "var(--sand)" }}>
           <Plant size={48} color="var(--forest)" weight="duotone" style={{ marginBottom: 16 }} />
           <h3>Nossa Solução</h3>
           <p>O ReVeste centraliza doações e trocas, promovendo o consumo consciente e transparente com um sistema gamificado que recompensa quem ajuda.</p>
@@ -29,7 +29,7 @@ export default function ComoFunciona() {
       <div className="title center" style={{ textAlign: "center" }}>
         <h2>Modalidades de <em>Apoio</em></h2>
       </div>
-      <div className="modes" style={{ marginBottom: 80 }}>
+      <div className="modes" style={{ marginBottom: 60 }}>
         <article className="mode">
           <div className="ic"><Handshake size={32} weight="light" /></div>
           <h3>Doar</h3>
@@ -52,7 +52,7 @@ export default function ComoFunciona() {
         </article>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, textAlign: "center", background: "var(--forest)", color: "var(--cream)", padding: 64, borderRadius: 32 }}>
+      <div className="grid-responsive-3 responsive-box-pad" style={{ textAlign: "center", background: "var(--forest)", color: "var(--cream)" }}>
         <div>
           <Users size={48} weight="light" style={{ margin: "0 auto 16px" }} />
           <h3>Para as Pessoas</h3>

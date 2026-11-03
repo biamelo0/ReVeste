@@ -33,9 +33,9 @@ export default function Pontos() {
         </div>
       </div>
 
-      <div style={{ background: "var(--sand)", borderRadius: 32, padding: 64 }}>
-        <h2 style={{ textAlign: "center", marginBottom: 40 }}>Como atuar como <em>Ponto de Coleta?</em></h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+      <div className="responsive-box-pad" style={{ background: "var(--sand)" }}>
+        <h2 style={{ textAlign: "center", marginBottom: 36 }}>Como atuar como <em>Ponto de Coleta?</em></h2>
+        <div className="grid-responsive-3">
           <div style={{ background: "var(--white)", padding: 32, borderRadius: 24 }}>
             <MagnifyingGlass size={32} color="var(--forest)" weight="duotone" style={{ marginBottom: 16 }} />
             <h4>1. Cadastro Visível</h4>

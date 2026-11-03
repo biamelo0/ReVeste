@@ -20,31 +20,31 @@ export default function Cadastro() {
         <h1 style={{ marginBottom: 8 }}>Faça parte da rede</h1>
         <p style={{ color: "var(--muted)", marginBottom: 32 }}>Crie sua conta para ajudar a movimentar a moda circular e sustentável.</p>
         
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 32 }}>
+        <div className="grid-responsive-2" style={{ marginBottom: 32 }}>
           <button 
             type="button"
             onClick={() => setTipo("pf")}
             style={{ 
-              padding: 20, borderRadius: 16, border: `2px solid ${tipo === "pf" ? "var(--forest)" : "rgba(42,58,39,.1)"}`, 
+              padding: "16px 18px", borderRadius: 16, border: `2px solid ${tipo === "pf" ? "var(--forest)" : "rgba(42,58,39,.1)"}`, 
               background: tipo === "pf" ? "rgba(102, 121, 79, 0.05)" : "transparent",
               cursor: "pointer", textAlign: "left"
             }}
           >
-            <User size={32} color={tipo === "pf" ? "var(--forest)" : "var(--muted)"} weight={tipo === "pf" ? "duotone" : "regular"} />
-            <b style={{ display: "block", marginTop: 12, color: tipo === "pf" ? "var(--forest)" : "var(--ink)" }}>Sou Indivíduo</b>
+            <User size={30} color={tipo === "pf" ? "var(--forest)" : "var(--muted)"} weight={tipo === "pf" ? "duotone" : "regular"} />
+            <b style={{ display: "block", marginTop: 10, color: tipo === "pf" ? "var(--forest)" : "var(--ink)" }}>Sou Indivíduo</b>
             <span style={{ fontSize: 13, color: "var(--muted)" }}>Quero doar, vender ou comprar roupas.</span>
           </button>
           <button 
             type="button"
             onClick={() => setTipo("pj")}
             style={{ 
-              padding: 20, borderRadius: 16, border: `2px solid ${tipo === "pj" ? "var(--forest)" : "rgba(42,58,39,.1)"}`, 
+              padding: "16px 18px", borderRadius: 16, border: `2px solid ${tipo === "pj" ? "var(--forest)" : "rgba(42,58,39,.1)"}`, 
               background: tipo === "pj" ? "rgba(102, 121, 79, 0.05)" : "transparent",
               cursor: "pointer", textAlign: "left"
             }}
           >
-            <Buildings size={32} color={tipo === "pj" ? "var(--forest)" : "var(--muted)"} weight={tipo === "pj" ? "duotone" : "regular"} />
-            <b style={{ display: "block", marginTop: 12, color: tipo === "pj" ? "var(--forest)" : "var(--ink)" }}>Sou Empresa / ONG</b>
+            <Buildings size={30} color={tipo === "pj" ? "var(--forest)" : "var(--muted)"} weight={tipo === "pj" ? "duotone" : "regular"} />
+            <b style={{ display: "block", marginTop: 10, color: tipo === "pj" ? "var(--forest)" : "var(--ink)" }}>Sou Empresa / ONG</b>
             <span style={{ fontSize: 13, color: "var(--muted)" }}>Instituições, lojas parceiras ou pontos de coleta.</span>
           </button>
         </div>
