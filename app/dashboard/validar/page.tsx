@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { ShieldCheck, ArrowRight, CheckCircle, XCircle } from "@phosphor-icons/react";
 import { useReveste, DoacaoItem } from "../../context/RevesteContext";
 
 export default function ValidarPecas() {
-  const { doacoes, validarDoacao } = useReveste();
+  const { user, doacoes, validarDoacao } = useReveste();
   const [avaliando, setAvaliando] = useState<DoacaoItem | null>(null);
   const [pontosInput, setPontosInput] = useState<number>(150);
   const [motivoInput, setMotivoInput] = useState("");
@@ -14,6 +15,21 @@ export default function ValidarPecas() {
   const filaTriagem = doacoes.filter(
     (d) => d.status === "Recebido no ponto" || d.status === "Aguardando entrega"
   );
+
+  if (!user.pontoColeta && user.tipo !== "pj") {
+    return (
+      <div className="card" style={{ maxWidth: 540, margin: "40px auto", textAlign: "center", padding: 36 }}>
+        <ShieldCheck size={48} color="var(--clay)" style={{ margin: "0 auto 16px" }} />
+        <h2 style={{ fontSize: 22, marginBottom: 8 }}>Área de Triagem e Validação</h2>
+        <p style={{ color: "var(--muted)", marginBottom: 24, fontSize: 15 }}>
+          A validação e distribuição de pontos de peças é restrita a voluntários, pontos de coleta e ONGs parceiras.
+        </p>
+        <Link href="/dashboard" className="btn sm" style={{ margin: "0 auto" }}>
+          Voltar ao Meu Painel
+        </Link>
+      </div>
+    );
+  }
 
   const abrirAvaliacao = (item: DoacaoItem) => {
     setAvaliando(item);

@@ -5,11 +5,31 @@ import { QrCode, MagnifyingGlass, CheckCircle, ArrowRight } from "@phosphor-icon
 import { useReveste } from "../../context/RevesteContext";
 
 export default function ReceberDoacao() {
-  const { doacoes, receberDoacao } = useReveste();
+  const { user, doacoes, receberDoacao } = useReveste();
   const [codigo, setCodigo] = useState("");
   const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null);
 
   const pendentes = doacoes.filter((d) => d.status === "Aguardando entrega");
+
+  if (!user.pontoColeta) {
+    return (
+      <div className="card" style={{ maxWidth: 540, margin: "40px auto", textAlign: "center", padding: 36 }}>
+        <QrCode size={48} color="var(--clay)" style={{ margin: "0 auto 16px" }} />
+        <h2 style={{ fontSize: 22, marginBottom: 8 }}>Área de Ponto de Coleta</h2>
+        <p style={{ color: "var(--muted)", marginBottom: 24, fontSize: 15 }}>
+          Esta funcionalidade é restrita a parceiros cadastrados como postos oficiais de coleta de doações. Se desejar receber roupas no seu endereço, ative essa opção no perfil.
+        </p>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/dashboard" className="btn sm ghost">
+            Voltar ao Painel
+          </Link>
+          <Link href="/dashboard/configuracoes" className="btn sm">
+            Ativar em Configurações
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleReceber = (cod: string) => {
     const res = receberDoacao(cod);

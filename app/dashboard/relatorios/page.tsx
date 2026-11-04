@@ -1,9 +1,26 @@
 "use client";
+import Link from "next/link";
 import { ChartPieSlice, Leaf, DownloadSimple, Tree } from "@phosphor-icons/react";
 import { useReveste } from "../../context/RevesteContext";
 
 export default function Relatorios() {
   const { user } = useReveste();
+
+  if (user.tipo !== "pj") {
+    return (
+      <div className="card" style={{ maxWidth: 540, margin: "40px auto", textAlign: "center", padding: 36 }}>
+        <ChartPieSlice size={48} color="var(--clay)" style={{ margin: "0 auto 16px" }} />
+        <h2 style={{ fontSize: 22, marginBottom: 8 }}>Área para Empresas e ONGs</h2>
+        <p style={{ color: "var(--muted)", marginBottom: 24, fontSize: 15 }}>
+          Os relatórios ESG e métricas avançadas de sustentabilidade são voltados para contas institucionais (PJ).
+        </p>
+        <Link href="/dashboard" className="btn sm" style={{ margin: "0 auto" }}>
+          Voltar ao Meu Painel
+        </Link>
+      </div>
+    );
+  }
+
   const pecasTotais = 1408 + user.pecasDoadas;
   const aguaLitros = (pecasTotais * 102).toLocaleString("pt-BR");
   const co2Evitado = Math.round(pecasTotais * 0.32);

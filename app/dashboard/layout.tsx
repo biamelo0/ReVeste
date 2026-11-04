@@ -103,7 +103,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div>
             <b style={{ display: "block", fontSize: 17, color: "var(--ink)" }}>{user.nome}</b>
             <span style={{ fontSize: 13, color: "var(--sage)", fontWeight: 600 }}>
-              {user.tipo === "pf" ? "Pessoa Física" : "Empresa / ONG"} • {user.pontos} pts
+              {user.tipo === "pf" ? "Pessoa Física" : "Empresa / ONG"}
+              {user.pontoColeta ? " • Ponto de Coleta" : ""} • {user.pontos} pts
             </span>
           </div>
           {/* Botão para abrir/fechar menu em telas de celular */}
@@ -129,27 +130,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <TShirt size={20} weight={isRouteActive("/dashboard/loja") ? "bold" : "regular"} /> Loja Solidária
           </Link>
 
-          <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
-          <b style={{ padding: "0 16px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--clay)", marginBottom: 4 }}>
-            Empresas e ONGs
-          </b>
-          <Link href="/dashboard/campanhas" style={linkStyle("/dashboard/campanhas")}>
-            <Megaphone size={20} weight={isRouteActive("/dashboard/campanhas") ? "bold" : "regular"} /> Campanhas
-          </Link>
-          <Link href="/dashboard/relatorios" style={linkStyle("/dashboard/relatorios")}>
-            <ChartPieSlice size={20} weight={isRouteActive("/dashboard/relatorios") ? "bold" : "regular"} /> Relatórios ESG
-          </Link>
+          {/* Seção Empresas e ONGs: visível apenas para contas PJ */}
+          {user.tipo === "pj" && (
+            <>
+              <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
+              <b style={{ padding: "0 16px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--clay)", marginBottom: 4 }}>
+                Empresas e ONGs
+              </b>
+              <Link href="/dashboard/campanhas" style={linkStyle("/dashboard/campanhas")}>
+                <Megaphone size={20} weight={isRouteActive("/dashboard/campanhas") ? "bold" : "regular"} /> Campanhas
+              </Link>
+              <Link href="/dashboard/relatorios" style={linkStyle("/dashboard/relatorios")}>
+                <ChartPieSlice size={20} weight={isRouteActive("/dashboard/relatorios") ? "bold" : "regular"} /> Relatórios ESG
+              </Link>
+            </>
+          )}
 
-          <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
-          <b style={{ padding: "0 16px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--clay)", marginBottom: 4 }}>
-            Ponto de Coleta
-          </b>
-          <Link href="/dashboard/receber" style={linkStyle("/dashboard/receber")}>
-            <MapPin size={20} weight={isRouteActive("/dashboard/receber") ? "bold" : "regular"} /> Receber Doação
-          </Link>
-          <Link href="/dashboard/validar" style={linkStyle("/dashboard/validar")}>
-            <ShieldCheck size={20} weight={isRouteActive("/dashboard/validar") ? "bold" : "regular"} /> Validar Peças
-          </Link>
+          {/* Seção Ponto de Coleta: visível apenas se o usuário for ponto de coleta */}
+          {user.pontoColeta && (
+            <>
+              <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
+              <b style={{ padding: "0 16px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--clay)", marginBottom: 4 }}>
+                Ponto de Coleta
+              </b>
+              <Link href="/dashboard/receber" style={linkStyle("/dashboard/receber")}>
+                <MapPin size={20} weight={isRouteActive("/dashboard/receber") ? "bold" : "regular"} /> Receber Doação
+              </Link>
+              <Link href="/dashboard/validar" style={linkStyle("/dashboard/validar")}>
+                <ShieldCheck size={20} weight={isRouteActive("/dashboard/validar") ? "bold" : "regular"} /> Validar Peças
+              </Link>
+            </>
+          )}
 
           <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
           <Link href="/dashboard/configuracoes" style={linkStyle("/dashboard/configuracoes")}>
