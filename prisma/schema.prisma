@@ -14,7 +14,8 @@ model User {
   email         String         @unique
   documento     String?
   endereco      String?
-  tipo          String         @default("pf") // "pf" ou "pj"
+  tipo          String         @default("pf") // "pf", "pj" ou "admin"
+  isAdmin       Boolean        @default(false)
   pontoColeta   Boolean        @default(false)
   pontos        Int            @default(420)
   pecasDoadas   Int            @default(14)

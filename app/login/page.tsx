@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowRight } from "@phosphor-icons/react";
+import { ArrowRight, Crown } from "@phosphor-icons/react";
 import { useReveste } from "../context/RevesteContext";
 
 export default function Login() {
   const router = useRouter();
-  const { login } = useReveste();
+  const { login, loginAsAdmin } = useReveste();
   const [email, setEmail] = useState("");
   const [senhaEnviada, setSenhaEnviada] = useState(false);
 
@@ -29,7 +29,7 @@ export default function Login() {
             <input
               type="email"
               className="input"
-              placeholder="seu@email.com"
+              placeholder="seu@email.com (ou admin@reveste.com.br)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -64,7 +64,40 @@ export default function Login() {
           </button>
         </form>
 
-        <p style={{ textAlign: "center", marginTop: 32, fontSize: 15, color: "var(--muted)" }}>
+        {/* Atalho de acesso do Administrador */}
+        <div
+          style={{
+            marginTop: 24,
+            padding: "16px",
+            background: "rgba(184, 97, 63, 0.08)",
+            border: "1px dashed var(--clay)",
+            borderRadius: 12,
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+            <div>
+              <b style={{ fontSize: 13, color: "var(--clay)", display: "flex", alignItems: "center", gap: 6 }}>
+                <Crown size={18} weight="fill" /> Acesso do Administrador
+              </b>
+              <span style={{ fontSize: 12, color: "var(--muted)", display: "block" }}>
+                Acesso geral (Pontos, Campanhas, Validações e Gestão)
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                loginAsAdmin();
+                router.push("/dashboard");
+              }}
+              className="btn sm"
+              style={{ background: "var(--clay)", fontSize: 12, padding: "6px 14px", textDecoration: "none" }}
+            >
+              Entrar como Admin
+            </button>
+          </div>
+        </div>
+
+        <p style={{ textAlign: "center", marginTop: 24, fontSize: 15, color: "var(--muted)" }}>
           Ainda não tem conta? <Link href="/cadastro" style={{ color: "var(--forest)", fontWeight: 600 }}>Crie uma agora</Link>
         </p>
       </div>

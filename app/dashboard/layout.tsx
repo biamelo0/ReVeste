@@ -15,6 +15,8 @@ import {
   List,
   X,
   LockKey,
+  Crown,
+  SlidersHorizontal,
 } from "@phosphor-icons/react";
 import { useReveste } from "../context/RevesteContext";
 
@@ -101,10 +103,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Cabeçalho do Usuário com botão mobile de toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
-            <b style={{ display: "block", fontSize: 17, color: "var(--ink)" }}>{user.nome}</b>
-            <span style={{ fontSize: 13, color: "var(--sage)", fontWeight: 600 }}>
-              {user.tipo === "pf" ? "Pessoa Física" : "Empresa / ONG"}
-              {user.pontoColeta ? " • Ponto de Coleta" : ""} • {user.pontos} pts
+            <b style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 17, color: "var(--ink)" }}>
+              {user.nome} {user.isAdmin && <Crown size={17} weight="fill" color="var(--clay)" />}
+            </b>
+            <span style={{ fontSize: 13, color: user.isAdmin ? "var(--clay)" : "var(--sage)", fontWeight: 600 }}>
+              {user.isAdmin
+                ? "👑 Administrador Geral"
+                : user.tipo === "pf"
+                ? "Pessoa Física"
+                : "Empresa / ONG"}
+              {!user.isAdmin && user.pontoColeta ? " • Ponto de Coleta" : ""} • {user.pontos} pts
             </span>
           </div>
           {/* Botão para abrir/fechar menu em telas de celular */}
@@ -130,8 +138,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <TShirt size={20} weight={isRouteActive("/dashboard/loja") ? "bold" : "regular"} /> Loja Solidária
           </Link>
 
-          {/* Seção Empresas e ONGs: visível apenas para contas PJ */}
-          {user.tipo === "pj" && (
+          {/* Seção Empresas e ONGs: visível para contas PJ ou Administrador */}
+          {(user.tipo === "pj" || user.isAdmin) && (
             <>
               <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
               <b style={{ padding: "0 16px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--clay)", marginBottom: 4 }}>
@@ -146,8 +154,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </>
           )}
 
-          {/* Seção Ponto de Coleta: visível apenas se o usuário for ponto de coleta */}
-          {user.pontoColeta && (
+          {/* Seção Ponto de Coleta: visível para ponto de coleta ou Administrador */}
+          {(user.pontoColeta || user.isAdmin) && (
             <>
               <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
               <b style={{ padding: "0 16px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--clay)", marginBottom: 4 }}>
@@ -158,6 +166,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
               <Link href="/dashboard/validar" style={linkStyle("/dashboard/validar")}>
                 <ShieldCheck size={20} weight={isRouteActive("/dashboard/validar") ? "bold" : "regular"} /> Validar Peças
+              </Link>
+            </>
+          )}
+
+          {/* Seção Exclusiva de Administração */}
+          {user.isAdmin && (
+            <>
+              <div style={{ margin: "10px 0", height: 1, background: "rgba(0,0,0,0.06)" }} />
+              <b style={{ padding: "0 16px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--clay)", display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                <Crown size={14} weight="fill" /> Administração Geral
+              </b>
+              <Link href="/dashboard/admin" style={linkStyle("/dashboard/admin")}>
+                <SlidersHorizontal size={20} weight={isRouteActive("/dashboard/admin") ? "bold" : "regular"} /> Painel do Sistema
               </Link>
             </>
           )}

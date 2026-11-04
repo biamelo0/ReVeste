@@ -7,7 +7,8 @@ export interface UserProfile {
   email: string;
   documento: string;
   endereco: string;
-  tipo: "pf" | "pj";
+  tipo: "pf" | "pj" | "admin";
+  isAdmin?: boolean;
   pontoColeta: boolean;
   pontos: number;
   pecasDoadas: number;
@@ -80,7 +81,11 @@ interface RevesteContextType {
   itensLoja: LojaItem[];
   movimentacoes: MovimentacaoItem[];
   login: (email: string, nome?: string) => void;
+  loginAsAdmin: () => void;
   logout: () => void;
+  resetAllData: () => void;
+  alterarStatusDoacaoAdmin: (id: string, novoStatus: DoacaoItem["status"]) => void;
+  excluirCampanhaAdmin: (id: string) => void;
   register: (dados: Partial<UserProfile>) => void;
   updateProfile: (dados: Partial<UserProfile>) => void;
   criarDoacao: (dados: {
@@ -116,6 +121,7 @@ const DEFAULT_USER: UserProfile = {
   documento: "123.456.789-00",
   endereco: "Rua das Flores, 120 - Centro, Itapetininga/SP",
   tipo: "pf",
+  isAdmin: false,
   pontoColeta: false,
   pontos: 450,
   pecasDoadas: 12,
@@ -368,12 +374,54 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   }, [user, doacoes, campanhas, itensLoja, movimentacoes, hydrated]);
 
   const login = (email: string, nome?: string) => {
+    const isAdm =
+      email.toLowerCase().includes("admin") ||
+      email.toLowerCase().endsWith("@reveste.com.br");
+
     setUser((prev) => ({
       ...prev,
       email,
-      nome: nome || prev.nome || email.split("@")[0],
+      nome: isAdm ? "Administrador Geral" : nome || prev.nome || email.split("@")[0],
+      tipo: isAdm ? "admin" : prev.tipo === "admin" ? "pf" : prev.tipo,
+      isAdmin: isAdm,
+      pontoColeta: isAdm ? true : prev.pontoColeta,
       isLoggedIn: true,
     }));
+  };
+
+  const loginAsAdmin = () => {
+    setUser({
+      nome: "Administrador Geral",
+      email: "admin@reveste.com.br",
+      documento: "00.000.000/0001-99",
+      endereco: "Central Administrativa ReVeste · FATEC",
+      tipo: "admin",
+      isAdmin: true,
+      pontoColeta: true,
+      pontos: 9999,
+      pecasDoadas: 520,
+      isLoggedIn: true,
+    });
+  };
+
+  const resetAllData = () => {
+    setDoacoes(DEFAULT_DOACOES);
+    setCampanhas(DEFAULT_CAMPANHAS);
+    setItensLoja(DEFAULT_LOJA);
+    setMovimentacoes(DEFAULT_MOVIMENTACOES);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {}
+  };
+
+  const alterarStatusDoacaoAdmin = (id: string, novoStatus: DoacaoItem["status"]) => {
+    setDoacoes((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, status: novoStatus } : d))
+    );
+  };
+
+  const excluirCampanhaAdmin = (id: string) => {
+    setCampanhas((prev) => prev.filter((c) => c.id !== id));
   };
 
   const register = (dados: Partial<UserProfile>) => {
@@ -392,10 +440,14 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateProfile = (dados: Partial<UserProfile>) => {
-    setUser((prev) => ({
-      ...prev,
-      ...dados,
-    }));
+    setUser((prev) => {
+      const isAdm = dados.tipo === "admin" ? true : dados.isAdmin !== undefined ? dados.isAdmin : (dados.tipo ? false : prev.isAdmin);
+      return {
+        ...prev,
+        ...dados,
+        isAdmin: isAdm,
+      };
+    });
   };
 
   const criarDoacao: RevesteContextType["criarDoacao"] = (dados) => {
@@ -603,7 +655,11 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
         itensLoja,
         movimentacoes,
         login,
+        loginAsAdmin,
         logout,
+        resetAllData,
+        alterarStatusDoacaoAdmin,
+        excluirCampanhaAdmin,
         register,
         updateProfile,
         criarDoacao,

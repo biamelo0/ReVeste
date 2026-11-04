@@ -16,7 +16,7 @@ export default function ValidarPecas() {
     (d) => d.status === "Recebido no ponto" || d.status === "Aguardando entrega"
   );
 
-  if (!user.pontoColeta && user.tipo !== "pj") {
+  if (!user.pontoColeta && user.tipo !== "pj" && !user.isAdmin) {
     return (
       <div className="card" style={{ maxWidth: 540, margin: "40px auto", textAlign: "center", padding: 36 }}>
         <ShieldCheck size={48} color="var(--clay)" style={{ margin: "0 auto 16px" }} />

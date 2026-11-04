@@ -11,7 +11,7 @@ export default function ReceberDoacao() {
 
   const pendentes = doacoes.filter((d) => d.status === "Aguardando entrega");
 
-  if (!user.pontoColeta) {
+  if (!user.pontoColeta && !user.isAdmin) {
     return (
       <div className="card" style={{ maxWidth: 540, margin: "40px auto", textAlign: "center", padding: 36 }}>
         <QrCode size={48} color="var(--clay)" style={{ margin: "0 auto 16px" }} />

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle } from "@phosphor-icons/react";
+import { CheckCircle, Crown, ShieldCheck } from "@phosphor-icons/react";
 import { useReveste } from "../../context/RevesteContext";
 
 export default function Configuracoes() {
@@ -9,6 +9,7 @@ export default function Configuracoes() {
   const [email, setEmail] = useState(user.email);
   const [documento, setDocumento] = useState(user.documento);
   const [endereco, setEndereco] = useState(user.endereco);
+  const [tipo, setTipo] = useState(user.tipo);
   const [pontoColeta, setPontoColeta] = useState(user.pontoColeta);
   const [salvo, setSalvo] = useState(false);
 
@@ -17,12 +18,13 @@ export default function Configuracoes() {
     setEmail(user.email);
     setDocumento(user.documento);
     setEndereco(user.endereco);
+    setTipo(user.tipo);
     setPontoColeta(user.pontoColeta);
   }, [user]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile({ nome, email, documento, endereco, pontoColeta });
+    updateProfile({ nome, email, documento, endereco, tipo, pontoColeta });
     setSalvo(true);
     setTimeout(() => setSalvo(false), 4000);
   };
@@ -33,7 +35,18 @@ export default function Configuracoes() {
       <p style={{ color: "var(--muted)", marginBottom: 32 }}>Gerencie seus dados pessoais, endereço e preferências.</p>
 
       <div className="card">
-        <h2 style={{ fontSize: 18, marginBottom: 24 }}>Meus Dados</h2>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+          <h2 style={{ fontSize: 18, margin: 0 }}>Meus Dados</h2>
+          {user.isAdmin ? (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 20, background: "rgba(184, 97, 63, 0.15)", color: "var(--clay)", fontSize: 13, fontWeight: 700 }}>
+              <Crown size={16} weight="fill" /> Perfil Administrador Geral
+            </span>
+          ) : (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 20, background: "rgba(102, 121, 79, 0.12)", color: "var(--forest)", fontSize: 13, fontWeight: 600 }}>
+              <ShieldCheck size={16} /> {user.tipo === "pj" ? "Conta Institucional (PJ)" : "Pessoa Física (PF)"}
+            </span>
+          )}
+        </div>
 
         {salvo && (
           <div style={{ padding: "12px 16px", background: "rgba(102, 121, 79, 0.15)", color: "var(--forest)", borderRadius: 12, marginBottom: 20, fontWeight: 500, display: "flex", alignItems: "center", gap: 8 }}>
@@ -65,6 +78,18 @@ export default function Configuracoes() {
               />
             </div>
             <div className="form-group">
+              <label className="label">Tipo de Conta</label>
+              <select
+                className="input"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value as "pf" | "pj" | "admin")}
+              >
+                <option value="pf">Pessoa Física (Doador / Usuário Comum)</option>
+                <option value="pj">Empresa / ONG (Institucional)</option>
+                <option value="admin">Administrador do Sistema</option>
+              </select>
+            </div>
+            <div className="form-group">
               <label className="label">CPF / CNPJ</label>
               <input
                 type="text"
@@ -73,7 +98,7 @@ export default function Configuracoes() {
                 onChange={(e) => setDocumento(e.target.value)}
               />
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{ gridColumn: "1 / -1" }}>
               <label className="label">Endereço de Correspondência</label>
               <input
                 type="text"

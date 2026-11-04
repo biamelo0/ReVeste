@@ -19,6 +19,23 @@ export async function GET() {
       },
     });
 
+    // Cria usuário administrador geral
+    await prisma.user.upsert({
+      where: { email: "admin@reveste.com.br" },
+      update: {},
+      create: {
+        nome: "Administrador Geral",
+        email: "admin@reveste.com.br",
+        documento: "00.000.000/0001-99",
+        endereco: "Central Administrativa ReVeste - FATEC",
+        tipo: "admin",
+        isAdmin: true,
+        pontoColeta: true,
+        pontos: 9999,
+        pecasDoadas: 520,
+      },
+    });
+
     // 2. Cria campanhas
     const countCampanhas = await prisma.campanha.count();
     if (countCampanhas === 0) {

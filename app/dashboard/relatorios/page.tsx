@@ -6,7 +6,7 @@ import { useReveste } from "../../context/RevesteContext";
 export default function Relatorios() {
   const { user } = useReveste();
 
-  if (user.tipo !== "pj") {
+  if (user.tipo !== "pj" && !user.isAdmin) {
     return (
       <div className="card" style={{ maxWidth: 540, margin: "40px auto", textAlign: "center", padding: 36 }}>
         <ChartPieSlice size={48} color="var(--clay)" style={{ margin: "0 auto 16px" }} />
