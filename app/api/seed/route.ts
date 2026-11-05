@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
@@ -169,7 +169,7 @@ export async function GET() {
       {
         success: false,
         error: message,
-        hint: "Certifique-se de que as variáveis POSTGRES_PRISMA_URL e POSTGRES_URL_NON_POOLING estão configuradas na Vercel.",
+        hint: "Certifique-se de que as variáveis DATABASE_URL e DIRECT_URL do Supabase estão configuradas na Vercel.",
       },
       { status: 500 }
     );
