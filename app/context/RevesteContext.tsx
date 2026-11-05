@@ -425,18 +425,25 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = (dados: Partial<UserProfile>) => {
-    setUser((prev) => ({
-      ...prev,
-      ...dados,
+    setUser({
+      nome: dados.nome || "Novo Usuário",
+      email: dados.email || "",
+      documento: dados.documento || "",
+      endereco: dados.endereco || "",
+      tipo: dados.tipo || "pf",
+      isAdmin: false,
+      pontoColeta: !!dados.pontoColeta,
+      pontos: dados.tipo === "pj" ? 100 : 50,
+      pecasDoadas: 0,
       isLoggedIn: true,
-    }));
+    });
   };
 
   const logout = () => {
-    setUser((prev) => ({
-      ...prev,
+    setUser({
+      ...DEFAULT_USER,
       isLoggedIn: false,
-    }));
+    });
   };
 
   const updateProfile = (dados: Partial<UserProfile>) => {
