@@ -332,12 +332,52 @@ const DEFAULT_MOVIMENTACOES: MovimentacaoItem[] = [
   },
 ];
 
+const INITIAL_REGISTERED_USERS: UserProfile[] = [
+  {
+    nome: "Beatriz Melo",
+    email: "beatriz@fatec.sp.gov.br",
+    documento: "123.456.789-00",
+    endereco: "Rua das Flores, 120 - Centro, Itapetininga/SP",
+    tipo: "pf",
+    isAdmin: false,
+    pontoColeta: false,
+    pontos: 450,
+    pecasDoadas: 12,
+  },
+  {
+    nome: "Administrador Geral",
+    email: "admin@reveste.com.br",
+    documento: "00.000.000/0001-99",
+    endereco: "Central Administrativa ReVeste · FATEC",
+    tipo: "admin",
+    isAdmin: true,
+    pontoColeta: true,
+    pontos: 9999,
+    pecasDoadas: 520,
+  },
+];
+
+const EMPTY_USER: UserProfile = {
+  nome: "",
+  email: "",
+  documento: "",
+  endereco: "",
+  tipo: "pf",
+  isAdmin: false,
+  pontoColeta: false,
+  pontos: 0,
+  pecasDoadas: 0,
+  isLoggedIn: false,
+};
+
 const RevesteContext = createContext<RevesteContextType | null>(null);
 
-const STORAGE_KEY = "reveste_app_state_v2";
+const STORAGE_KEY = "reveste_app_state_v3";
+const USERS_STORAGE_KEY = "reveste_registered_users_v2";
 
 export function RevesteProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile>(DEFAULT_USER);
+  const [registeredUsers, setRegisteredUsers] = useState<UserProfile[]>(INITIAL_REGISTERED_USERS);
   const [doacoes, setDoacoes] = useState<DoacaoItem[]>(DEFAULT_DOACOES);
   const [campanhas, setCampanhas] = useState<CampanhaItem[]>(DEFAULT_CAMPANHAS);
   const [itensLoja, setItensLoja] = useState<LojaItem[]>(DEFAULT_LOJA);
@@ -346,6 +386,11 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
+      const rawUsers = localStorage.getItem(USERS_STORAGE_KEY);
+      if (rawUsers) {
+        setRegisteredUsers(JSON.parse(rawUsers));
+      }
+
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
@@ -364,6 +409,13 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     try {
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(registeredUsers));
+    } catch {}
+  }, [registeredUsers, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({ user, doacoes, campanhas, itensLoja, movimentacoes })
@@ -374,23 +426,56 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   }, [user, doacoes, campanhas, itensLoja, movimentacoes, hydrated]);
 
   const login = (email: string, nome?: string) => {
+    const emailClean = (email || "").toLowerCase().trim();
     const isAdm =
-      email.toLowerCase().includes("admin") ||
-      email.toLowerCase().endsWith("@reveste.com.br");
+      emailClean.includes("admin") ||
+      emailClean.endsWith("@reveste.com.br");
 
-    setUser((prev) => ({
-      ...prev,
-      email,
-      nome: isAdm ? "Administrador Geral" : nome || prev.nome || email.split("@")[0],
-      tipo: isAdm ? "admin" : prev.tipo === "admin" ? "pf" : prev.tipo,
-      isAdmin: isAdm,
-      pontoColeta: isAdm ? true : prev.pontoColeta,
+    if (isAdm) {
+      loginAsAdmin();
+      return;
+    }
+
+    // Busca nas contas cadastradas
+    const existing = registeredUsers.find(
+      (u) => u.email.toLowerCase().trim() === emailClean
+    );
+
+    if (existing) {
+      setUser({
+        ...existing,
+        isLoggedIn: true,
+      });
+      return;
+    }
+
+    if (emailClean === "beatriz@fatec.sp.gov.br") {
+      setUser({
+        ...DEFAULT_USER,
+        isLoggedIn: true,
+      });
+      return;
+    }
+
+    // Novo usuário registrado dinamicamente via login
+    const newUser: UserProfile = {
+      nome: nome || emailClean.split("@")[0],
+      email: emailClean,
+      documento: "",
+      endereco: "",
+      tipo: "pf",
+      isAdmin: false,
+      pontoColeta: false,
+      pontos: 50,
+      pecasDoadas: 0,
       isLoggedIn: true,
-    }));
+    };
+    setRegisteredUsers((prev) => [...prev, newUser]);
+    setUser(newUser);
   };
 
   const loginAsAdmin = () => {
-    setUser({
+    const adminUser: UserProfile = {
       nome: "Administrador Geral",
       email: "admin@reveste.com.br",
       documento: "00.000.000/0001-99",
@@ -401,7 +486,8 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       pontos: 9999,
       pecasDoadas: 520,
       isLoggedIn: true,
-    });
+    };
+    setUser(adminUser);
   };
 
   const resetAllData = () => {
@@ -411,6 +497,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     setMovimentacoes(DEFAULT_MOVIMENTACOES);
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(USERS_STORAGE_KEY);
     } catch {}
   };
 
@@ -425,9 +512,10 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = (dados: Partial<UserProfile>) => {
-    setUser({
+    const emailClean = (dados.email || "").toLowerCase().trim();
+    const novoUsuario: UserProfile = {
       nome: dados.nome || "Novo Usuário",
-      email: dados.email || "",
+      email: emailClean,
       documento: dados.documento || "",
       endereco: dados.endereco || "",
       tipo: dados.tipo || "pf",
@@ -436,24 +524,48 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       pontos: dados.tipo === "pj" ? 100 : 50,
       pecasDoadas: 0,
       isLoggedIn: true,
+    };
+
+    setRegisteredUsers((prev) => {
+      const filtered = prev.filter(
+        (u) => u.email.toLowerCase().trim() !== emailClean
+      );
+      return [...filtered, novoUsuario];
     });
+
+    setUser(novoUsuario);
   };
 
   const logout = () => {
     setUser({
-      ...DEFAULT_USER,
+      ...EMPTY_USER,
       isLoggedIn: false,
     });
   };
 
   const updateProfile = (dados: Partial<UserProfile>) => {
     setUser((prev) => {
-      const isAdm = dados.tipo === "admin" ? true : dados.isAdmin !== undefined ? dados.isAdmin : (dados.tipo ? false : prev.isAdmin);
-      return {
+      const isAdm =
+        dados.tipo === "admin"
+          ? true
+          : dados.isAdmin !== undefined
+          ? dados.isAdmin
+          : dados.tipo
+          ? false
+          : prev.isAdmin;
+      const updated = {
         ...prev,
         ...dados,
         isAdmin: isAdm,
       };
+      setRegisteredUsers((users) =>
+        users.map((u) =>
+          u.email.toLowerCase().trim() === updated.email.toLowerCase().trim()
+            ? updated
+            : u
+        )
+      );
+      return updated;
     });
   };
 
