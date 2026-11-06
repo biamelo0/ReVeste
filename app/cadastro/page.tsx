@@ -13,12 +13,32 @@ export default function Cadastro() {
   const [documento, setDocumento] = useState("");
   const [email, setEmail] = useState("");
   const [pontoColeta, setPontoColeta] = useState(false);
+  const [erroCadastro, setErroCadastro] = useState<string | null>(null);
 
   return (
     <main className="pad wrap" style={{ maxWidth: 600, minHeight: "80vh", display: "flex", alignItems: "center" }}>
       <div className="card" style={{ width: "100%" }}>
         <h1 style={{ marginBottom: 8 }}>Faça parte da rede</h1>
         <p style={{ color: "var(--muted)", marginBottom: 32 }}>Crie sua conta para ajudar a movimentar a moda circular e sustentável.</p>
+        
+        {erroCadastro && (
+          <div
+            style={{
+              padding: "12px 16px",
+              background: "rgba(184, 97, 63, 0.12)",
+              color: "var(--clay)",
+              borderRadius: 12,
+              fontSize: 14,
+              marginBottom: 20,
+              border: "1px solid rgba(184, 97, 63, 0.25)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span>⚠️ {erroCadastro}</span>
+          </div>
+        )}
         
         <div className="grid-responsive-2" style={{ marginBottom: 32 }}>
           <button 
@@ -52,8 +72,13 @@ export default function Cadastro() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            register({ nome, documento, email, tipo, pontoColeta });
-            router.push("/dashboard");
+            setErroCadastro(null);
+            const res = register({ nome, documento, email, tipo, pontoColeta });
+            if (res.success) {
+              router.push("/dashboard");
+            } else {
+              setErroCadastro(res.message || "Não foi possível concluir o cadastro.");
+            }
           }}
         >
           <div className="form-group">

@@ -80,13 +80,13 @@ interface RevesteContextType {
   campanhas: CampanhaItem[];
   itensLoja: LojaItem[];
   movimentacoes: MovimentacaoItem[];
-  login: (email: string, nome?: string) => void;
+  login: (email: string, nome?: string) => { success: boolean; message?: string };
   loginAsAdmin: () => void;
   logout: () => void;
   resetAllData: () => void;
   alterarStatusDoacaoAdmin: (id: string, novoStatus: DoacaoItem["status"]) => void;
   excluirCampanhaAdmin: (id: string) => void;
-  register: (dados: Partial<UserProfile>) => void;
+  register: (dados: Partial<UserProfile>) => { success: boolean; message?: string };
   updateProfile: (dados: Partial<UserProfile>) => void;
   criarDoacao: (dados: {
     titulo: string;
@@ -425,15 +425,19 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, doacoes, campanhas, itensLoja, movimentacoes, hydrated]);
 
-  const login = (email: string, nome?: string) => {
+  const login = (email: string, nome?: string): { success: boolean; message?: string } => {
     const emailClean = (email || "").toLowerCase().trim();
+    if (!emailClean) {
+      return { success: false, message: "Por favor, digite seu e-mail." };
+    }
+
     const isAdm =
       emailClean.includes("admin") ||
       emailClean.endsWith("@reveste.com.br");
 
     if (isAdm) {
       loginAsAdmin();
-      return;
+      return { success: true };
     }
 
     // Busca nas contas cadastradas
@@ -446,7 +450,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
         ...existing,
         isLoggedIn: true,
       });
-      return;
+      return { success: true };
     }
 
     if (emailClean === "beatriz@fatec.sp.gov.br") {
@@ -454,24 +458,14 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
         ...DEFAULT_USER,
         isLoggedIn: true,
       });
-      return;
+      return { success: true };
     }
 
-    // Novo usuário registrado dinamicamente via login
-    const newUser: UserProfile = {
-      nome: nome || emailClean.split("@")[0],
-      email: emailClean,
-      documento: "",
-      endereco: "",
-      tipo: "pf",
-      isAdmin: false,
-      pontoColeta: false,
-      pontos: 50,
-      pecasDoadas: 0,
-      isLoggedIn: true,
+    // Conta não encontrada: NÃO cadastra pelo login!
+    return {
+      success: false,
+      message: "E-mail não encontrado. Por favor, crie uma conta antes de entrar.",
     };
-    setRegisteredUsers((prev) => [...prev, newUser]);
-    setUser(newUser);
   };
 
   const loginAsAdmin = () => {
@@ -511,8 +505,24 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     setCampanhas((prev) => prev.filter((c) => c.id !== id));
   };
 
-  const register = (dados: Partial<UserProfile>) => {
+  const register = (dados: Partial<UserProfile>): { success: boolean; message?: string } => {
     const emailClean = (dados.email || "").toLowerCase().trim();
+    if (!emailClean) {
+      return { success: false, message: "Por favor, informe um e-mail válido." };
+    }
+
+    const jaExiste =
+      registeredUsers.some((u) => u.email.toLowerCase().trim() === emailClean) ||
+      emailClean === "beatriz@fatec.sp.gov.br" ||
+      emailClean === "admin@reveste.com.br";
+
+    if (jaExiste) {
+      return {
+        success: false,
+        message: "Este e-mail já está cadastrado no sistema. Por favor, faça login.",
+      };
+    }
+
     const novoUsuario: UserProfile = {
       nome: dados.nome || "Novo Usuário",
       email: emailClean,
@@ -526,14 +536,9 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       isLoggedIn: true,
     };
 
-    setRegisteredUsers((prev) => {
-      const filtered = prev.filter(
-        (u) => u.email.toLowerCase().trim() !== emailClean
-      );
-      return [...filtered, novoUsuario];
-    });
-
+    setRegisteredUsers((prev) => [...prev, novoUsuario]);
     setUser(novoUsuario);
+    return { success: true };
   };
 
   const logout = () => {

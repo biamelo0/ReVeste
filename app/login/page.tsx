@@ -9,6 +9,7 @@ export default function Login() {
   const router = useRouter();
   const { login, loginAsAdmin } = useReveste();
   const [email, setEmail] = useState("");
+  const [erroLogin, setErroLogin] = useState<string | null>(null);
   const [senhaEnviada, setSenhaEnviada] = useState(false);
 
   return (
@@ -17,11 +18,35 @@ export default function Login() {
         <h1 style={{ marginBottom: 8 }}>Bem-vindo(a) de volta!</h1>
         <p style={{ color: "var(--muted)", marginBottom: 32 }}>Entre para continuar doando, trocando ou vendendo peças na ReVeste.</p>
         
+        {erroLogin && (
+          <div
+            style={{
+              padding: "12px 16px",
+              background: "rgba(184, 97, 63, 0.12)",
+              color: "var(--clay)",
+              borderRadius: 12,
+              fontSize: 14,
+              marginBottom: 20,
+              border: "1px solid rgba(184, 97, 63, 0.25)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span>⚠️ {erroLogin}</span>
+          </div>
+        )}
+
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            login(email);
-            router.push("/dashboard");
+            setErroLogin(null);
+            const res = login(email);
+            if (res.success) {
+              router.push("/dashboard");
+            } else {
+              setErroLogin(res.message || "E-mail ou senha incorretos.");
+            }
           }}
         >
           <div className="form-group">
