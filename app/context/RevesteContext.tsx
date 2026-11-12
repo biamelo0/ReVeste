@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { checkJavaApiHealth, listarItensJava, criarItemJava, atualizarItemJava, deletarItemJava } from "@/lib/javaApi";
 
 export interface UserProfile {
   nome: string;
@@ -80,6 +81,10 @@ interface RevesteContextType {
   campanhas: CampanhaItem[];
   itensLoja: LojaItem[];
   movimentacoes: MovimentacaoItem[];
+  isJavaApiOnline: boolean;
+  recarregarDoacoesJava: () => Promise<void>;
+  atualizarDoacao: (id: string, dados: Partial<DoacaoItem>) => Promise<void>;
+  deletarDoacao: (id: string) => Promise<void>;
   login: (email: string, nome?: string) => { success: boolean; message?: string };
   loginAsAdmin: () => void;
   logout: () => void;
@@ -383,6 +388,43 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   const [itensLoja, setItensLoja] = useState<LojaItem[]>(DEFAULT_LOJA);
   const [movimentacoes, setMovimentacoes] = useState<MovimentacaoItem[]>(DEFAULT_MOVIMENTACOES);
   const [hydrated, setHydrated] = useState(false);
+  const [isJavaApiOnline, setIsJavaApiOnline] = useState(false);
+
+  const recarregarDoacoesJava = useCallback(async () => {
+    try {
+      const online = await checkJavaApiHealth();
+      setIsJavaApiOnline(online);
+      if (online) {
+        const itensJava = await listarItensJava();
+        if (itensJava && itensJava.length > 0) {
+          const mapped: DoacaoItem[] = itensJava.map((item) => ({
+            id: String(item.id),
+            codigo: item.codigo || `REV-${item.id}`,
+            titulo: item.titulo,
+            descricao: item.descricao,
+            quantidade: item.quantidade,
+            tamanho: item.tamanho,
+            modalidade: (item.modalidade as "Doação" | "Troca" | "Venda") || "Doação",
+            preco: item.preco || undefined,
+            pontoDestino: item.pontoColeta,
+            doador: item.doador,
+            whatsapp: item.whatsapp || "15999990000",
+            dataCriacao: new Date(item.dataCadastro).toLocaleDateString("pt-BR"),
+            status: (item.status as DoacaoItem["status"]) || "Aguardando entrega",
+            pontosGerados: item.pontosSustentaveis || item.quantidade * 30,
+            fotoUrl: item.fotoUrl,
+          }));
+          setDoacoes(mapped);
+        }
+      }
+    } catch {
+      // Fallback silencioso para dados locais
+    }
+  }, []);
+
+  useEffect(() => {
+    recarregarDoacoesJava();
+  }, [recarregarDoacoesJava]);
 
   useEffect(() => {
     try {
@@ -496,9 +538,52 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
   };
 
   const alterarStatusDoacaoAdmin = (id: string, novoStatus: DoacaoItem["status"]) => {
+    atualizarDoacao(id, { status: novoStatus });
+  };
+
+  const atualizarDoacao = async (id: string, dados: Partial<DoacaoItem>) => {
     setDoacoes((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, status: novoStatus } : d))
+      prev.map((d) => (d.id === id ? { ...d, ...dados } : d))
     );
+
+    const numId = Number(id);
+    if (!isNaN(numId) && isJavaApiOnline) {
+      try {
+        const itemAtual = doacoes.find((d) => d.id === id);
+        if (itemAtual) {
+          const payload = {
+            codigo: dados.codigo || itemAtual.codigo,
+            titulo: dados.titulo || itemAtual.titulo,
+            descricao: dados.descricao || itemAtual.descricao,
+            tamanho: dados.tamanho || itemAtual.tamanho,
+            quantidade: dados.quantidade || itemAtual.quantidade,
+            modalidade: (dados.modalidade || itemAtual.modalidade) as any,
+            preco: dados.preco !== undefined ? dados.preco : itemAtual.preco || null,
+            pontoColeta: dados.pontoDestino || itemAtual.pontoDestino,
+            doador: dados.doador || itemAtual.doador,
+            whatsapp: dados.whatsapp || itemAtual.whatsapp,
+            fotoUrl: dados.fotoUrl || itemAtual.fotoUrl,
+            status: dados.status || itemAtual.status,
+          };
+          await atualizarItemJava(numId, payload);
+        }
+      } catch (err) {
+        console.warn("Erro ao atualizar item na API Java:", err);
+      }
+    }
+  };
+
+  const deletarDoacao = async (id: string) => {
+    setDoacoes((prev) => prev.filter((d) => d.id !== id));
+
+    const numId = Number(id);
+    if (!isNaN(numId) && isJavaApiOnline) {
+      try {
+        await deletarItemJava(numId);
+      } catch (err) {
+        console.warn("Erro ao deletar item na API Java:", err);
+      }
+    }
   };
 
   const excluirCampanhaAdmin = (id: string) => {
@@ -597,6 +682,32 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       campanhaId: dados.campanhaId,
     };
     setDoacoes((prev) => [nova, ...prev]);
+
+    // Sincroniza POST com a API Java Spring Boot
+    if (isJavaApiOnline) {
+      criarItemJava({
+        codigo,
+        titulo: dados.titulo,
+        descricao: dados.descricao,
+        categoria: "Camisas",
+        tamanho: dados.tamanho,
+        quantidade: dados.quantidade,
+        modalidade: dados.modalidade,
+        preco: dados.preco || null,
+        pontoColeta: dados.pontoDestino,
+        doador: user.nome,
+        whatsapp: dados.whatsapp || "15999990000",
+        fotoUrl: dados.fotoUrl,
+        status: "Aguardando entrega",
+      })
+        .then((criado) => {
+          setDoacoes((prev) =>
+            prev.map((d) => (d.codigo === codigo ? { ...d, id: String(criado.id) } : d))
+          );
+        })
+        .catch((err) => console.warn("API Java offline ou falha no POST:", err));
+    }
+
     return nova;
   };
 
@@ -634,7 +745,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     }
 
     const atualizado: DoacaoItem = { ...found, status: "Recebido no ponto" };
-    setDoacoes((prev) => prev.map((d) => (d.id === found.id ? atualizado : d)));
+    atualizarDoacao(found.id, { status: "Recebido no ponto" });
     return {
       ok: true,
       msg: `Lote ${found.codigo} (${found.titulo}) recebido com sucesso! Agora ele está disponível em "Validar Peças".`,
@@ -648,18 +759,11 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
 
     const pts = pontosCustom ?? alvo.pontosGerados;
 
-    setDoacoes((prev) =>
-      prev.map((d) =>
-        d.id === id
-          ? {
-              ...d,
-              status: aprovar ? "Validado pela ONG" : "Reprovado",
-              pontosGerados: aprovar ? pts : 0,
-              motivoReprovacao: aprovar ? undefined : motivo || "Peças fora dos critérios de higienização/uso.",
-            }
-          : d
-      )
-    );
+    atualizarDoacao(id, {
+      status: aprovar ? "Validado pela ONG" : "Reprovado",
+      pontosGerados: aprovar ? pts : 0,
+      motivoReprovacao: aprovar ? undefined : motivo || "Peças fora dos critérios de higienização/uso.",
+    });
 
     if (aprovar) {
       setUser((prev) => ({
@@ -778,6 +882,10 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
         campanhas,
         itensLoja,
         movimentacoes,
+        isJavaApiOnline,
+        recarregarDoacoesJava,
+        atualizarDoacao,
+        deletarDoacao,
         login,
         loginAsAdmin,
         logout,

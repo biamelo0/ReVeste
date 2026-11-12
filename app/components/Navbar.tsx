@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { List, X, House, Handshake, TShirt, Trophy, MapPin, Target, SignIn, UserCircle, SignOut } from "@phosphor-icons/react";
+import { List, X, House, Handshake, TShirt, Trophy, MapPin, Target, SignIn, UserCircle, SignOut, Sparkle } from "@phosphor-icons/react";
 import logoReveste from "@/public/logo-reveste.png";
 import { useReveste } from "../context/RevesteContext";
 

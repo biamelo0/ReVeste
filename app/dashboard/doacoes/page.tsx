@@ -1,12 +1,18 @@
 "use client";
 import { useState } from "react";
-import { Plus, Package, Clock, CheckCircle, XCircle, QrCode, Camera, X } from "@phosphor-icons/react";
+import { Plus, Package, Clock, CheckCircle, XCircle, QrCode, Camera, X, PencilSimple, Trash, ArrowSquareOut, Sparkle } from "@phosphor-icons/react";
 import { useReveste, DoacaoItem } from "../../context/RevesteContext";
 
 export default function Doacoes() {
-  const { doacoes, criarDoacao } = useReveste();
+  const { doacoes, criarDoacao, atualizarDoacao, deletarDoacao, isJavaApiOnline } = useReveste();
   const [mostrarForm, setMostrarForm] = useState(false);
   const [qrModal, setQrModal] = useState<DoacaoItem | null>(null);
+  const [itemEditando, setItemEditando] = useState<DoacaoItem | null>(null);
+  const [editTitulo, setEditTitulo] = useState("");
+  const [editDescricao, setEditDescricao] = useState("");
+  const [editTamanho, setEditTamanho] = useState("M");
+  const [editQuantidade, setEditQuantidade] = useState(1);
+  const [editPonto, setEditPonto] = useState("");
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -29,6 +35,35 @@ export default function Doacoes() {
       }
     };
     reader.readAsDataURL(file);
+  };
+
+  const abrirEdicao = (d: DoacaoItem) => {
+    setItemEditando(d);
+    setEditTitulo(d.titulo);
+    setEditDescricao(d.descricao);
+    setEditTamanho(d.tamanho);
+    setEditQuantidade(d.quantidade);
+    setEditPonto(d.pontoDestino);
+  };
+
+  const handleSalvarEdicao = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!itemEditando) return;
+    await atualizarDoacao(itemEditando.id, {
+      titulo: editTitulo,
+      descricao: editDescricao,
+      tamanho: editTamanho,
+      quantidade: editQuantidade,
+      pontoDestino: editPonto,
+      pontosGerados: editQuantidade * 30,
+    });
+    setItemEditando(null);
+  };
+
+  const handleExcluir = async (id: string, titulo: string) => {
+    if (window.confirm(`Tem certeza que deseja excluir "${titulo}" do sistema?`)) {
+      await deletarDoacao(id);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -66,8 +101,36 @@ export default function Doacoes() {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
         <div>
-          <h1 style={{ fontSize: 28, marginBottom: 8 }}>Minhas Doações e Peças</h1>
-          <p style={{ color: "var(--muted)" }}>Cadastre novas roupas para doação, troca ou venda social e acompanhe a validação.</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
+            <h1 style={{ fontSize: 28, margin: 0 }}>Minhas Doações e Peças</h1>
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "4px 10px",
+                borderRadius: 999,
+                fontSize: 12,
+                fontWeight: 600,
+                background: isJavaApiOnline ? "#DCE5CF" : "#FEE2E2",
+                color: isJavaApiOnline ? "#166534" : "#991B1B",
+              }}
+              title={isJavaApiOnline ? "Conectado ao Back-end Java Spring Boot (porta 8080)" : "API Java Offline"}
+            >
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: "50%",
+                  background: isJavaApiOnline ? "#15803D" : "#DC2626",
+                }}
+              />
+              {isJavaApiOnline ? "Java Spring Boot Conectado" : "Modo Local"}
+            </span>
+          </div>
+          <p style={{ color: "var(--muted)" }}>
+            Cadastre novas roupas para doação, troca ou venda social e acompanhe a validação em tempo real.
+          </p>
         </div>
         <button className="btn" onClick={() => setMostrarForm(!mostrarForm)}>
           {mostrarForm ? <><X weight="bold" /> Fechar Formulário</> : <><Plus weight="bold" /> Nova Doação / Peça</>}
@@ -290,7 +353,7 @@ export default function Doacoes() {
               <small style={{ color: "var(--muted)", fontSize: 12 }}>{d.pontoDestino}</small>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8 }}>
               {d.status === "Validado pela ONG" ? (
                 <b style={{ color: "var(--forest)" }}>+ {d.pontosGerados} pts</b>
               ) : (
@@ -299,15 +362,139 @@ export default function Doacoes() {
               <button
                 type="button"
                 className="btn sm ghost"
-                style={{ padding: "6px 12px", fontSize: 12 }}
+                style={{ padding: "6px 10px", fontSize: 12 }}
                 onClick={() => setQrModal(d)}
+                title="Ver QR Code / Etiqueta"
               >
-                <QrCode size={16} /> QR Code
+                <QrCode size={16} />
+              </button>
+              <button
+                type="button"
+                className="btn sm ghost"
+                style={{ padding: "6px 10px", fontSize: 12, color: "#B45309" }}
+                onClick={() => abrirEdicao(d)}
+                title="Editar Doação (PUT)"
+              >
+                <PencilSimple size={16} />
+              </button>
+              <button
+                type="button"
+                className="btn sm ghost"
+                style={{ padding: "6px 10px", fontSize: 12, color: "#DC2626" }}
+                onClick={() => handleExcluir(d.id, d.titulo)}
+                title="Excluir Doação (DELETE)"
+              >
+                <Trash size={16} />
               </button>
             </div>
           </div>
         ))}
       </div>
+
+      {itemEditando && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999,
+            padding: 20,
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 20,
+              maxWidth: 520,
+              width: "100%",
+              padding: 24,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <h2 style={{ fontSize: 20, margin: 0 }}>Editar Peça / Doação (PUT #{itemEditando.id})</h2>
+              <button onClick={() => setItemEditando(null)} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSalvarEdicao}>
+              <div style={{ display: "grid", gap: 14 }}>
+                <div>
+                  <label className="label">Título da Peça</label>
+                  <input
+                    type="text"
+                    className="input"
+                    value={editTitulo}
+                    onChange={(e) => setEditTitulo(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="label">Descrição</label>
+                  <textarea
+                    rows={3}
+                    className="input"
+                    value={editDescricao}
+                    onChange={(e) => setEditDescricao(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div>
+                    <label className="label">Tamanho</label>
+                    <input
+                      type="text"
+                      className="input"
+                      value={editTamanho}
+                      onChange={(e) => setEditTamanho(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Quantidade</label>
+                    <input
+                      type="number"
+                      min={1}
+                      className="input"
+                      value={editQuantidade}
+                      onChange={(e) => setEditQuantidade(Number(e.target.value))}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="label">Ponto de Coleta</label>
+                  <select
+                    className="input"
+                    value={editPonto}
+                    onChange={(e) => setEditPonto(e.target.value)}
+                  >
+                    <option value="Faculdade de Tecnologia (FATEC)">Faculdade de Tecnologia (FATEC Itapetininga)</option>
+                    <option value="Fundo Social de Solidariedade">Fundo Social de Solidariedade - Centro</option>
+                    <option value="ONG Mãos Dadas">ONG Mãos Dadas - Vila Rio Branco</option>
+                  </select>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 12 }}>
+                  <button type="button" className="btn ghost" onClick={() => setItemEditando(null)}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn">
+                    Salvar Alterações (PUT)
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
