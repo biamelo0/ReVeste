@@ -12,6 +12,7 @@ export default function Cadastro() {
   const [nome, setNome] = useState("");
   const [documento, setDocumento] = useState("");
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [pontoColeta, setPontoColeta] = useState(false);
   const [erroCadastro, setErroCadastro] = useState<string | null>(null);
 
@@ -70,10 +71,10 @@ export default function Cadastro() {
         </div>
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             setErroCadastro(null);
-            const res = register({ nome, documento, email, tipo, pontoColeta });
+            const res = await register({ nome, documento, email, tipo, pontoColeta, senha });
             if (res.success) {
               router.push("/dashboard");
             } else {
@@ -116,7 +117,14 @@ export default function Cadastro() {
           </div>
           <div className="form-group">
             <label className="label">Senha</label>
-            <input type="password" className="input" placeholder="••••••••" required />
+            <input
+              type="password"
+              className="input"
+              placeholder="••••••••"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+            />
           </div>
 
           <label style={{ display: "flex", gap: 12, padding: "16px", background: "#f9f9f9", borderRadius: 12, marginBottom: 32, cursor: "pointer", border: "1px solid #eee" }}>

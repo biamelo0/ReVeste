@@ -37,13 +37,14 @@ JSON da especificação OpenAPI v3:
 
 ---
 
-## 💾 Banco de Dados H2 em Memória
+## ☁️ Banco de Dados PostgreSQL (Supabase na Nuvem)
 
-O projeto já vem configurado com banco H2 em memória e carga inicial de 5 itens no arquivo `data.sql`.
-* **URL do Console:** [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
-* **JDBC URL:** `jdbc:h2:mem:revestedb`
-* **Usuário:** `sa`
-* **Senha:** *(deixe em branco)*
+O back-end está conectado diretamente ao seu banco de dados PostgreSQL do **Supabase**:
+* **Host:** `aws-0-us-east-1.pooler.supabase.com` (Porta `5432`)
+* **Banco:** `postgres`
+* **Usuário:** `postgres.nebknibfzdfhjordpijb`
+* **Tabelas criadas e sincronizadas automaticamente:** `usuarios` e `itens_doacao`
+* **Persistência permanente na nuvem:** todos os cadastros, logins e doações ficam gravados diretamente no Supabase!
 
 ---
 

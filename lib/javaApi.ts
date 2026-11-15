@@ -159,3 +159,88 @@ export async function deletarItemJava(id: number): Promise<void> {
     throw new Error(errorBody.message || `Erro ao excluir item #${id} (${res.status})`);
   }
 }
+
+// ===================================================================
+// Endpoints de Autenticação e Gestão de Usuários no Banco Java
+// ===================================================================
+
+export interface UsuarioJava {
+  id: number;
+  nome: string;
+  email: string;
+  documento?: string;
+  endereco?: string;
+  tipo: "pf" | "pj" | "admin";
+  pontoColeta: boolean;
+  isAdmin: boolean;
+  pontos: number;
+  pecasDoadas: number;
+  dataCadastro: string;
+}
+
+export interface UsuarioCadastroInput {
+  nome: string;
+  email: string;
+  senha: string;
+  documento?: string;
+  endereco?: string;
+  tipo?: "pf" | "pj" | "admin";
+  pontoColeta?: boolean;
+}
+
+/**
+ * POST /api/auth/cadastro - Cadastra um novo usuário diretamente no banco de dados.
+ */
+export async function cadastrarUsuarioApi(dados: UsuarioCadastroInput): Promise<UsuarioJava> {
+  const res = await fetch(`${JAVA_API_BASE_URL}/api/auth/cadastro`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dados),
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => ({}));
+    const errorMsg =
+      errorBody.details && Array.isArray(errorBody.details)
+        ? errorBody.details.join(", ")
+        : errorBody.message || `Erro ao cadastrar usuário (${res.status})`;
+    throw new Error(errorMsg);
+  }
+
+  return res.json();
+}
+
+/**
+ * POST /api/auth/login - Autentica o usuário com validação de senha no banco de dados.
+ */
+export async function loginUsuarioApi(email: string, senha: string): Promise<UsuarioJava> {
+  const res = await fetch(`${JAVA_API_BASE_URL}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, senha }),
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => ({}));
+    throw new Error(errorBody.message || "E-mail ou senha incorretos.");
+  }
+
+  return res.json();
+}
+
+/**
+ * PUT /api/usuarios/{id}/pontos - Adiciona pontos e peças doadas diretamente no banco.
+ */
+export async function adicionarPontosUsuarioApi(id: number, pontos: number, pecas: number): Promise<UsuarioJava> {
+  const res = await fetch(`${JAVA_API_BASE_URL}/api/usuarios/${id}/pontos?pontos=${pontos}&pecas=${pecas}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => ({}));
+    throw new Error(errorBody.message || "Erro ao atualizar pontos do usuário no banco.");
+  }
+
+  return res.json();
+}

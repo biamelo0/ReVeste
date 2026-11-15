@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowRight, Crown } from "@phosphor-icons/react";
+import { ArrowRight, Crown, Buildings } from "@phosphor-icons/react";
 import { useReveste } from "../context/RevesteContext";
 
 export default function Login() {
   const router = useRouter();
-  const { login, loginAsAdmin } = useReveste();
+  const { login, loginAsAdmin, loginAsFatec } = useReveste();
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [erroLogin, setErroLogin] = useState<string | null>(null);
   const [senhaEnviada, setSenhaEnviada] = useState(false);
 
@@ -38,10 +39,10 @@ export default function Login() {
         )}
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             setErroLogin(null);
-            const res = login(email);
+            const res = await login(email, senha);
             if (res.success) {
               router.push("/dashboard");
             } else {
@@ -62,7 +63,14 @@ export default function Login() {
           </div>
           <div className="form-group">
             <label className="label">Senha</label>
-            <input type="password" className="input" placeholder="••••••••" required />
+            <input
+              type="password"
+              className="input"
+              placeholder="••••••••"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              required
+            />
           </div>
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 8 }}>
@@ -88,6 +96,39 @@ export default function Login() {
             Entrar no Painel <ArrowRight weight="bold" />
           </button>
         </form>
+
+        {/* Atalho de acesso Ponto de Coleta FATEC */}
+        <div
+          style={{
+            marginTop: 20,
+            padding: "16px",
+            background: "rgba(102, 121, 79, 0.08)",
+            border: "1px dashed var(--forest)",
+            borderRadius: 12,
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
+            <div>
+              <b style={{ fontSize: 13, color: "var(--forest)", display: "flex", alignItems: "center", gap: 6 }}>
+                <Buildings size={18} weight="fill" /> Faculdade de Tecnologia (FATEC)
+              </b>
+              <span style={{ fontSize: 12, color: "var(--muted)", display: "block" }}>
+                Ponto de Coleta (Receber doações e validar peças)
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                loginAsFatec();
+                router.push("/dashboard");
+              }}
+              className="btn sm"
+              style={{ background: "var(--forest)", fontSize: 12, padding: "6px 14px", textDecoration: "none" }}
+            >
+              Entrar como FATEC
+            </button>
+          </div>
+        </div>
 
         {/* Atalho de acesso do Administrador */}
         <div

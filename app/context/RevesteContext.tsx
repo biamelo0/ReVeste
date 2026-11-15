@@ -1,9 +1,19 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { checkJavaApiHealth, listarItensJava, criarItemJava, atualizarItemJava, deletarItemJava } from "@/lib/javaApi";
+import {
+  checkJavaApiHealth,
+  listarItensJava,
+  criarItemJava,
+  atualizarItemJava,
+  deletarItemJava,
+  cadastrarUsuarioApi,
+  loginUsuarioApi,
+  adicionarPontosUsuarioApi,
+} from "@/lib/javaApi";
 
 export interface UserProfile {
+  id?: string;
   nome: string;
   email: string;
   documento: string;
@@ -13,6 +23,7 @@ export interface UserProfile {
   pontoColeta: boolean;
   pontos: number;
   pecasDoadas: number;
+  senha?: string;
   isLoggedIn?: boolean;
 }
 
@@ -27,6 +38,7 @@ export interface DoacaoItem {
   preco?: number;
   pontoDestino: string;
   doador: string;
+  doadorEmail?: string;
   whatsapp?: string;
   dataCriacao: string;
   status: "Aguardando entrega" | "Recebido no ponto" | "Validado pela ONG" | "Reprovado";
@@ -85,13 +97,14 @@ interface RevesteContextType {
   recarregarDoacoesJava: () => Promise<void>;
   atualizarDoacao: (id: string, dados: Partial<DoacaoItem>) => Promise<void>;
   deletarDoacao: (id: string) => Promise<void>;
-  login: (email: string, nome?: string) => { success: boolean; message?: string };
+  login: (email: string, senha?: string) => Promise<{ success: boolean; message?: string }>;
   loginAsAdmin: () => void;
+  loginAsFatec: () => void;
   logout: () => void;
   resetAllData: () => void;
   alterarStatusDoacaoAdmin: (id: string, novoStatus: DoacaoItem["status"]) => void;
   excluirCampanhaAdmin: (id: string) => void;
-  register: (dados: Partial<UserProfile>) => { success: boolean; message?: string };
+  register: (dados: Partial<UserProfile> & { senha?: string }) => Promise<{ success: boolean; message?: string }>;
   updateProfile: (dados: Partial<UserProfile>) => void;
   criarDoacao: (dados: {
     titulo: string;
@@ -130,6 +143,7 @@ const DEFAULT_USER: UserProfile = {
   pontoColeta: false,
   pontos: 450,
   pecasDoadas: 12,
+  senha: "123456",
   isLoggedIn: false,
 };
 
@@ -348,6 +362,7 @@ const INITIAL_REGISTERED_USERS: UserProfile[] = [
     pontoColeta: false,
     pontos: 450,
     pecasDoadas: 12,
+    senha: "123456",
   },
   {
     nome: "Administrador Geral",
@@ -359,6 +374,19 @@ const INITIAL_REGISTERED_USERS: UserProfile[] = [
     pontoColeta: true,
     pontos: 9999,
     pecasDoadas: 520,
+    senha: "admin123",
+  },
+  {
+    nome: "Faculdade de Tecnologia (FATEC)",
+    email: "fatec@fatec.sp.gov.br",
+    documento: "43.123.456/0001-88",
+    endereco: "Av. Dr. Lobo, 512 - Centro, Itapetininga/SP",
+    tipo: "pj",
+    isAdmin: false,
+    pontoColeta: true,
+    pontos: 1500,
+    pecasDoadas: 85,
+    senha: "fatec123",
   },
 ];
 
@@ -467,18 +495,59 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, doacoes, campanhas, itensLoja, movimentacoes, hydrated]);
 
-  const login = (email: string, nome?: string): { success: boolean; message?: string } => {
+  const login = async (email: string, senha?: string): Promise<{ success: boolean; message?: string }> => {
     const emailClean = (email || "").toLowerCase().trim();
     if (!emailClean) {
       return { success: false, message: "Por favor, digite seu e-mail." };
     }
+    if (!senha) {
+      return { success: false, message: "Por favor, digite sua senha." };
+    }
 
+    // 1. Tenta autenticação real no banco de dados Java Spring Boot
+    if (isJavaApiOnline) {
+      try {
+        const usuarioDb = await loginUsuarioApi(emailClean, senha);
+        const perfil: UserProfile = {
+          id: String(usuarioDb.id),
+          nome: usuarioDb.nome,
+          email: usuarioDb.email,
+          documento: usuarioDb.documento || "",
+          endereco: usuarioDb.endereco || "",
+          tipo: usuarioDb.tipo,
+          isAdmin: usuarioDb.isAdmin,
+          pontoColeta: usuarioDb.pontoColeta,
+          pontos: usuarioDb.pontos,
+          pecasDoadas: usuarioDb.pecasDoadas,
+          senha,
+          isLoggedIn: true,
+        };
+        setUser(perfil);
+        return { success: true };
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "E-mail ou senha incorretos.";
+        return { success: false, message: msg };
+      }
+    }
+
+    // 2. Fallback local caso o back-end Java esteja temporariamente desligado
     const isAdm =
       emailClean.includes("admin") ||
       emailClean.endsWith("@reveste.com.br");
 
     if (isAdm) {
+      if (senha !== "admin123" && senha !== "123456") {
+        return { success: false, message: "Senha incorreta para a conta de Administrador." };
+      }
       loginAsAdmin();
+      return { success: true };
+    }
+
+    if (emailClean.includes("fatec") && !emailClean.includes("beatriz")) {
+      if (senha !== "fatec123" && senha !== "123456") {
+        return { success: false, message: "Senha incorreta para a conta da FATEC." };
+      }
+      loginAsFatec();
       return { success: true };
     }
 
@@ -488,6 +557,10 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     );
 
     if (existing) {
+      const senhaCorreta = existing.senha || "123456";
+      if (senha !== senhaCorreta) {
+        return { success: false, message: "Senha incorreta. Por favor, tente novamente." };
+      }
       setUser({
         ...existing,
         isLoggedIn: true,
@@ -496,10 +569,16 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (emailClean === "beatriz@fatec.sp.gov.br") {
-      setUser({
+      if (senha !== "123456" && senha !== "beatriz123") {
+        return { success: false, message: "Senha incorreta para a conta da Beatriz." };
+      }
+      const beatriz = {
         ...DEFAULT_USER,
+        senha: "123456",
         isLoggedIn: true,
-      });
+      };
+      setRegisteredUsers((prev) => [...prev.filter(u => u.email.toLowerCase() !== emailClean), beatriz]);
+      setUser(beatriz);
       return { success: true };
     }
 
@@ -524,6 +603,22 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       isLoggedIn: true,
     };
     setUser(adminUser);
+  };
+
+  const loginAsFatec = () => {
+    const fatecUser: UserProfile = {
+      nome: "Faculdade de Tecnologia (FATEC)",
+      email: "fatec@fatec.sp.gov.br",
+      documento: "43.123.456/0001-88",
+      endereco: "Av. Dr. Lobo, 512 - Centro, Itapetininga/SP",
+      tipo: "pj",
+      isAdmin: false,
+      pontoColeta: true,
+      pontos: 1500,
+      pecasDoadas: 85,
+      isLoggedIn: true,
+    };
+    setUser(fatecUser);
   };
 
   const resetAllData = () => {
@@ -590,10 +685,50 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     setCampanhas((prev) => prev.filter((c) => c.id !== id));
   };
 
-  const register = (dados: Partial<UserProfile>): { success: boolean; message?: string } => {
+  const register = async (dados: Partial<UserProfile> & { senha?: string }): Promise<{ success: boolean; message?: string }> => {
     const emailClean = (dados.email || "").toLowerCase().trim();
     if (!emailClean) {
       return { success: false, message: "Por favor, informe um e-mail válido." };
+    }
+    if (!dados.senha) {
+      return { success: false, message: "Por favor, informe uma senha." };
+    }
+
+    // 1. Persiste no banco de dados Java Spring Boot se estiver online
+    if (isJavaApiOnline) {
+      try {
+        const criadoDb = await cadastrarUsuarioApi({
+          nome: dados.nome || "Novo Usuário",
+          email: emailClean,
+          senha: dados.senha,
+          documento: dados.documento,
+          endereco: dados.endereco,
+          tipo: dados.tipo || "pf",
+          pontoColeta: !!dados.pontoColeta,
+        });
+
+        const novoUsuario: UserProfile = {
+          id: String(criadoDb.id),
+          nome: criadoDb.nome,
+          email: criadoDb.email,
+          documento: criadoDb.documento || "",
+          endereco: criadoDb.endereco || "",
+          tipo: criadoDb.tipo,
+          isAdmin: criadoDb.isAdmin,
+          pontoColeta: criadoDb.pontoColeta,
+          pontos: criadoDb.pontos,
+          pecasDoadas: criadoDb.pecasDoadas,
+          senha: dados.senha,
+          isLoggedIn: true,
+        };
+
+        setRegisteredUsers((prev) => [...prev, novoUsuario]);
+        setUser(novoUsuario);
+        return { success: true };
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Erro ao cadastrar usuário no banco de dados.";
+        return { success: false, message: msg };
+      }
     }
 
     const jaExiste =
@@ -618,6 +753,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       pontoColeta: !!dados.pontoColeta,
       pontos: dados.tipo === "pj" ? 100 : 50,
       pecasDoadas: 0,
+      senha: dados.senha || "123456",
       isLoggedIn: true,
     };
 
@@ -673,7 +809,8 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
       modalidade: dados.modalidade,
       preco: dados.preco,
       pontoDestino: dados.pontoDestino,
-      doador: user.nome,
+      doador: user.nome || "Beatriz Melo",
+      doadorEmail: user.email || "beatriz@fatec.sp.gov.br",
       whatsapp: dados.whatsapp || "15999990000",
       dataCriacao: "Agora mesmo",
       status: "Aguardando entrega",
@@ -766,11 +903,56 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (aprovar) {
-      setUser((prev) => ({
-        ...prev,
-        pontos: prev.pontos + pts,
-        pecasDoadas: prev.pecasDoadas + alvo.quantidade,
-      }));
+      const targetEmail = (alvo.doadorEmail || "").toLowerCase().trim();
+      const targetNome = (alvo.doador || "").toLowerCase().trim();
+
+      // 1. Atualiza a pontuação do doador na base de usuários cadastrados
+      setRegisteredUsers((prevUsers) => {
+        let matched = false;
+        const updated = prevUsers.map((u) => {
+          const matchEmail = targetEmail && u.email.toLowerCase().trim() === targetEmail;
+          const matchNome = targetNome && u.nome.toLowerCase().trim() === targetNome;
+          if (matchEmail || matchNome) {
+            matched = true;
+            return {
+              ...u,
+              pontos: u.pontos + pts,
+              pecasDoadas: u.pecasDoadas + alvo.quantidade,
+            };
+          }
+          return u;
+        });
+
+        // Caso seja a Beatriz e não esteja ainda no array dinâmico
+        if (!matched && (targetEmail === "beatriz@fatec.sp.gov.br" || targetNome.includes("beatriz"))) {
+          return [
+            ...updated,
+            {
+              ...DEFAULT_USER,
+              pontos: DEFAULT_USER.pontos + pts,
+              pecasDoadas: DEFAULT_USER.pecasDoadas + alvo.quantidade,
+            },
+          ];
+        }
+
+        return updated;
+      });
+
+      // 2. Se o usuário atualmente logado for o próprio doador, atualiza o estado em tempo real
+      setUser((currUser) => {
+        const matchCurrEmail = targetEmail && currUser.email.toLowerCase().trim() === targetEmail;
+        const matchCurrNome = targetNome && currUser.nome.toLowerCase().trim() === targetNome;
+        if (matchCurrEmail || matchCurrNome) {
+          return {
+            ...currUser,
+            pontos: currUser.pontos + pts,
+            pecasDoadas: currUser.pecasDoadas + alvo.quantidade,
+          };
+        }
+        return currUser;
+      });
+
+      // 3. Registra a movimentação de crédito
       setMovimentacoes((prev) => [
         {
           id: String(Date.now()),
@@ -888,6 +1070,7 @@ export function RevesteProvider({ children }: { children: React.ReactNode }) {
         deletarDoacao,
         login,
         loginAsAdmin,
+        loginAsFatec,
         logout,
         resetAllData,
         alterarStatusDoacaoAdmin,

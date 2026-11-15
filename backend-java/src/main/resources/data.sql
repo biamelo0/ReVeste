@@ -1,4 +1,13 @@
 -- Carga inicial de dados para demonstração do ReVeste (Engenharia de Software / POO)
+
+-- Usuários cadastrados no Banco de Dados
+INSERT INTO usuarios (nome, email, senha, documento, endereco, tipo, ponto_coleta, is_admin, pontos, pecas_doadas, data_cadastro)
+VALUES
+('Beatriz Melo', 'beatriz@fatec.sp.gov.br', '123456', '123.456.789-00', 'Rua das Flores, 120 - Centro, Itapetininga/SP', 'pf', false, false, 450, 12, CURRENT_TIMESTAMP),
+('Faculdade de Tecnologia (FATEC)', 'fatec@fatec.sp.gov.br', 'fatec123', '43.123.456/0001-88', 'Av. Dr. Lobo, 512 - Centro, Itapetininga/SP', 'pj', true, false, 1500, 85, CURRENT_TIMESTAMP),
+('Administrador Geral', 'admin@reveste.com.br', 'admin123', '00.000.000/0001-99', 'Central Administrativa ReVeste · FATEC', 'admin', true, true, 9999, 520, CURRENT_TIMESTAMP);
+
+-- Itens de Doação no Banco de Dados
 INSERT INTO itens_doacao (codigo, titulo, descricao, categoria, tamanho, quantidade, modalidade, preco, ponto_coleta, doador, whatsapp, status, pontos_sustentaveis, data_cadastro)
 VALUES 
 ('REV-8841', 'Lote de Inverno Sustentável', '3 Casacos, 2 Calças em ótimo estado higienizadas para doação', 'Jaquetas', 'M / G', 5, 'Doação', NULL, 'ONG Mãos Dadas', 'Beatriz Melo', '15999990000', 'Validado pela ONG', 150, CURRENT_TIMESTAMP),

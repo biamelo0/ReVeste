@@ -14,8 +14,8 @@ public class RevesteApiApplication {
         SpringApplication.run(RevesteApiApplication.class, args);
         System.out.println("==========================================================");
         System.out.println("  🌿 API ReVeste - Spring Boot inicializada com sucesso!");
+        System.out.println("  ☁️ Banco de Dados:          PostgreSQL na Nuvem (Supabase)");
         System.out.println("  📖 Documentação Swagger UI: http://localhost:8080/swagger-ui/index.html");
-        System.out.println("  💾 Console Banco H2:        http://localhost:8080/h2-console");
         System.out.println("==========================================================");
     }
 }
